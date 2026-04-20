@@ -36,7 +36,7 @@ docker run -d \
   -p 3000:3000 \
   -v play-data:/data \
   --env-file .env.all-in-one \
-  ghcr.io/itsweber/itsweber-play:latest
+  ghcr.io/itsweber-official/itsweber-play:latest
 ```
 
 Beim ersten Aufruf `http://<host>:3000` startet automatisch der Setup-Wizard
