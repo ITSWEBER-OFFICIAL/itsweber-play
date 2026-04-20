@@ -15,7 +15,7 @@ GitHub-Pushes über SSH sind sicherer als HTTPS + Token. Deine Keys bleiben loka
 
 ```bash
 # Im Git-Bash oder PowerShell:
-ssh-keygen -t ed25519 -C "info@itsweber.de" -f ~/.ssh/id_ed25519_github
+ssh-keygen -t ed25519 -C "you@example.com" -f ~/.ssh/id_ed25519_github
 # Passphrase vergeben — wichtig! (nicht leer lassen)
 ```
 
@@ -37,7 +37,7 @@ Host github.com
   AddKeysToAgent yes
 ```
 
-Test: `ssh -T git@github.com` → „Hi Benjamin! You've successfully authenticated..."
+Test: `ssh -T git@github.com` → „Hi &lt;username&gt;! You've successfully authenticated..."
 
 ### 2. ITSWEBER-Organisation absichern
 

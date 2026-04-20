@@ -855,22 +855,24 @@ function StepStorage({
       </p>
       <ul className="space-y-2 text-sm text-foreground">
         <li className="rounded-md border border-border bg-surface-raised p-3">
-          <strong>MinIO-Volumes</strong> liegen unter
-          <code className="mx-1 rounded bg-surface px-1 py-0.5 mono text-xs">/mnt/user/appdata/play/minio</code>
-          (Unraid) bzw. dem in <code className="mx-1 rounded bg-surface px-1 py-0.5 mono text-xs">docker-compose.yml</code>
-          gemounteten Pfad. Sicher diese Volumes regelmäßig — sie enthalten alle Originale + Transkodate.
+          <strong>Storage-Volumes</strong> liegen unter dem in deinem Deployment konfigurierten Pfad
+          (Docker-Volume aus <code className="mx-1 rounded bg-surface px-1 py-0.5 mono text-xs">docker-compose.yml</code>
+          oder Host-Bind-Mount). Sicher diese Volumes regelmäßig — sie enthalten alle Originale + Transkodate.
         </li>
         <li className="rounded-md border border-border bg-surface-raised p-3">
           <strong>Postgres-Backups</strong> via <code className="mono text-xs">pg_dump</code> mindestens täglich.
           Empfehlung: Cron im Host-System mit Retention 14 Tage.
         </li>
         <li className="rounded-md border border-border bg-surface-raised p-3">
-          <strong>Kein GPU-Transcoding</strong> bis Frigate / CompreFace die GPU freigeben — siehe
-          <code className="mx-1 rounded bg-surface px-1 py-0.5 mono text-xs">CLAUDE.md</code>.
+          <strong>GPU-Transcoding</strong> läuft per Default CPU-only. Aktivierung per
+          <code className="mx-1 rounded bg-surface px-1 py-0.5 mono text-xs">TRANSCODE_USE_GPU=1</code>
+          setzt Hardware-Acceleration (NVENC/VAAPI) voraus — Details in
+          <code className="mx-1 rounded bg-surface px-1 py-0.5 mono text-xs">docs/gpu-transcoding.md</code>.
         </li>
         <li className="rounded-md border border-border bg-surface-raised p-3">
-          <strong>Reverse-Proxy</strong> (NPM auf 192.168.0.2) muss WebSocket + große Bodies (Upload) erlauben — Details
-          in <code className="mx-1 rounded bg-surface px-1 py-0.5 mono text-xs">config/npm-proxy-host.md</code>.
+          <strong>Reverse-Proxy</strong> vor der Instanz muss WebSocket + große Upload-Bodies
+          (&gt; 100&nbsp;MB) erlauben. Beispiel-Config für Nginx Proxy Manager, Traefik oder Caddy siehe
+          <code className="mx-1 rounded bg-surface px-1 py-0.5 mono text-xs">docs/reverse-proxy.md</code>.
         </li>
       </ul>
       <label className="flex cursor-pointer items-center gap-3 rounded-md border border-border bg-surface-raised p-3 text-sm">

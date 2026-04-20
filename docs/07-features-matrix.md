@@ -208,5 +208,5 @@
 - MediaCMS-Bestand-Migration vor v1.0
 - Öffentliches Paywall / Monetarisierung vor v1.0
 - Native Mobile-App (PWA reicht)
-- GPU-Transcoding (bis Frigate/CompreFace die GPU freigeben)
+- GPU-Transcoding (optional via `TRANSCODE_USE_GPU`, benötigt dedizierte GPU)
 - Livestreams (RTMP Ingest) — Backlog, nicht priorisiert

@@ -1,31 +1,30 @@
-// Urheber-Konstanten — Single Source of Truth.
+// Branding / Attribution — env-driven with AGPL-3.0 upstream lock.
 //
-// Struktur:
-//   PRODUKT      = "ITSWEBER Play"           (die Plattform selbst)
-//   PRODUKT-URL  = https://play.itsweber.net (öffentliche Instanz)
-//   URHEBER      = "ITSWEBER" / Benjamin Weber
-//   URHEBER-URL  = https://itsweber.de       (Firmen-Site)
-//
-// WICHTIG: Diese Werte sind Teil der Software-Identität. Sie werden im Footer,
-// in den HTML-Meta-Tags, im Admin-Panel und in der package.json referenziert.
-// SiteSettings kann `siteName` und `siteTagline` für das Marketing-Branding
-// ändern (eine Fork-Instanz kann sich anders nennen), aber NICHT die
-// Urheberschaft des Systems selbst verschleiern.
-//
-// Lizenz: AGPL-3.0 — Attributierungspflicht. Wer die Software weitergibt oder
-// hosted, muss diesen Hinweis erhalten. Das Entfernen der
-// "ITSWEBER Play — powered by ITSWEBER"-Zeile verletzt die Lizenz.
-//
-// © Benjamin Weber / ITSWEBER — https://itsweber.de
+// Fork-User können via NEXT_PUBLIC_*-Env-Vars Namen + URLs für ihre
+// Instanz setzen. Defaults sind generisch. Der UPSTREAM-Block darunter
+// ist per Lizenz (AGPL-3.0) fest verankert — er darf NICHT per Env
+// entfernt werden und MUSS sichtbar im Footer bleiben.
 
-export const APP_NAME = "ITSWEBER Play" as const;
+const env = (k: string, fallback: string): string => {
+  const v = typeof process !== "undefined" ? process.env?.[k] : undefined;
+  return v && v.length > 0 ? v : fallback;
+};
+
+// ── Nutzer-Branding (über Env überschreibbar) ────────────────────────
+export const APP_NAME = env("NEXT_PUBLIC_APP_NAME", "Play");
 export const APP_VERSION = "v0.4.0-dev" as const;
-export const PRODUCT_HOMEPAGE = "https://play.itsweber.net" as const;
+export const PRODUCT_HOMEPAGE = env("NEXT_PUBLIC_PRODUCT_HOMEPAGE", "");
+export const VENDOR_NAME = env("NEXT_PUBLIC_VENDOR_NAME", "");
+export const VENDOR_URL = env("NEXT_PUBLIC_VENDOR_URL", "");
+export const AUTHOR_NAME = env("NEXT_PUBLIC_AUTHOR_NAME", "");
+export const AUTHOR_URL = env("NEXT_PUBLIC_AUTHOR_URL", "");
 
-export const VENDOR_NAME = "ITSWEBER" as const;
-export const VENDOR_URL = "https://itsweber.de" as const;
-export const AUTHOR_NAME = "Benjamin Weber" as const;
-export const AUTHOR_URL = "https://itsweber.de" as const;
+export const COPYRIGHT_NOTICE: string = AUTHOR_NAME
+  ? `© ${new Date().getFullYear()} ${AUTHOR_NAME}${VENDOR_NAME ? ` · ${VENDOR_NAME}` : ""}`
+  : "";
 
-export const COPYRIGHT_NOTICE =
-  `© ${new Date().getFullYear()} ${AUTHOR_NAME} · ${VENDOR_NAME}` as const;
+// ── Upstream-Attribution (AGPL-Pflicht, NICHT per Env ausschaltbar) ──
+export const UPSTREAM_NAME = "ITSWEBER Play" as const;
+export const UPSTREAM_URL =
+  "https://github.com/ITSWEBER-OFFICIAL/itsweber-play" as const;
+export const UPSTREAM_LICENSE = "AGPL-3.0" as const;

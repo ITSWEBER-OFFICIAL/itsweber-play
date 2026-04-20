@@ -36,12 +36,14 @@ export const metadata: Metadata = {
   title: APP_NAME,
   description: "Der etwas andere Video-Hub.",
   applicationName: APP_NAME,
-  authors: [{ name: AUTHOR_NAME, url: AUTHOR_URL }],
-  creator: AUTHOR_NAME,
-  publisher: VENDOR_NAME,
+  ...(AUTHOR_NAME && {
+    authors: [{ name: AUTHOR_NAME, url: AUTHOR_URL || undefined }],
+    creator: AUTHOR_NAME,
+  }),
+  ...(VENDOR_NAME && { publisher: VENDOR_NAME }),
   other: {
-    copyright: COPYRIGHT_NOTICE,
-    "designer": AUTHOR_NAME,
+    ...(COPYRIGHT_NOTICE && { copyright: COPYRIGHT_NOTICE }),
+    ...(AUTHOR_NAME && { designer: AUTHOR_NAME }),
   },
   icons: {
     // `src/app/icon.svg` wird von Next automatisch als <link rel="icon"> für

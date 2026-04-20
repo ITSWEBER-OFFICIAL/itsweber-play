@@ -40,3 +40,9 @@ previews/assets/demo-thumbs/
 build-aio.log
 image-transfer.log
 *.tsbuildinfo
+
+# project-private: local Claude-Code context + infrastructure notes
+.claude/
+CLAUDE.md
+config/npm-proxy-host.md
+docs/50-github-explainer-plan.md

@@ -8,7 +8,7 @@ keine Live-Premiere.
 
 ## Scope v1.1 (geplant, nicht verbindlich)
 
-1. **Ingest-Node**: MediaMTX oder nginx-rtmp auf eigenem Unraid-Container (`play-rtmp`, `10.10.8.56`).
+1. **Ingest-Node**: MediaMTX oder nginx-rtmp als eigener Container (`play-rtmp`).
 2. **Protokolle**: RTMP-Ingest (OBS), WebRTC-WHIP-Ingest (Browser-Go-Live).
 3. **Delivery**: HLS-Low-Latency (Part-Request, 1–2 s Glass-to-Glass). Optional WebRTC-WHEP für < 500 ms.
 4. **Chat**: Eigener WebSocket-Service (Fastify-WS) mit Redis-Pub/Sub, Moderation-Hooks (Auto-Mute, Slow-Mode), Super-Chat-Stub via `Reaction`-Model.

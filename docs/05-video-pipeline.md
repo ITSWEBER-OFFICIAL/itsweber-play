@@ -104,8 +104,9 @@ play-assets/
 
 ## GPU-Support (später)
 
-Wenn GPU frei (aktuell blockiert von Frigate/CompreFace):
+Wenn eine GPU dediziert für Transcoding verfügbar ist:
 ```bash
 ffmpeg -hwaccel cuda -c:v h264_cuvid -i <input> ... -c:v h264_nvenc -preset p4 ...
 ```
-Toggle via `ENABLE_GPU_TRANSCODE=true` in `.env`. Worker-Image benötigt NVIDIA-Runtime.
+Toggle via `TRANSCODE_USE_GPU=1` in `.env`. Worker-Image benötigt NVIDIA-
+bzw. VAAPI-Runtime auf dem Host.

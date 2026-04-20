@@ -25,7 +25,7 @@ Default-Grenzwert für Admin-Auto-Hide: `score >= 0.7 AND label = "TOXIC"`.
 
 | Name | Default | Zweck |
 |---|---|---|
-| `OLLAMA_URL` | _leer_ | Basis-URL des Ollama-Servers (`http://10.10.8.60:11434`). Leer = Feature aus. |
+| `OLLAMA_URL` | _leer_ | Basis-URL des Ollama-Servers (z. B. `http://ollama:11434`). Leer = Feature aus. |
 | `OLLAMA_MODERATION_MODEL` | `llama3.2:3b` | Modell-Name (muss auf dem Ollama-Host `ollama pull`-ed sein). |
 | `MODERATE_CONCURRENCY` | `2` | BullMQ-Worker-Concurrency für den Queue. |
 

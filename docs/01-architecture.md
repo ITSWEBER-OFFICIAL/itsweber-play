@@ -2,18 +2,18 @@
 
 ## Container-Topologie
 
-```
+```text
                        Internet
                           │
                           ▼
                   ┌───────────────┐
-                  │  NPM (NGINX)  │  192.168.0.2
-                  │  Let's Encrypt│
+                  │ Reverse-Proxy │  <PROXY-HOST>
+                  │ Let's Encrypt │
                   └───────┬───────┘
-                          │  (play.itsweber.net)
+                          │  (play.example.com)
                           ▼
         ┌─────────────────────────────────────────┐
-        │  play-web   (Next.js 15 SSR)            │  10.10.8.50:3000
+        │  play-web   (Next.js 15 SSR)            │  :3000
         │  - Public Routes                        │
         │  - /studio (Creator-Backend)            │
         │  - /admin (Admin-Panel + Theme-Editor)  │
@@ -21,7 +21,7 @@
                        │  tRPC / HTTP
                        ▼
         ┌─────────────────────────────────────────┐
-        │  play-api  (Fastify + Better Auth)      │  10.10.8.51:4000
+        │  play-api  (Fastify + Better Auth)      │  :4000
         │  - /trpc/*                              │
         │  - /auth/*                              │
         │  - /upload/* (tus.io resumable)         │
@@ -31,22 +31,27 @@
            ▼           ▼            ▼
     ┌─────────┐  ┌──────────┐  ┌─────────────┐
     │postgres │  │  redis   │  │   minio     │
-    │  10.8.52│  │ 10.8.53  │  │  10.8.54    │
+    │  :5432  │  │  :6379   │  │  :9000      │
     │ Prisma  │  │ BullMQ + │  │ S3 API      │
     │         │  │ Sessions │  │ Videos+Thumb│
     └─────────┘  └────┬─────┘  └─────────────┘
                       │
                       ▼ Job Dequeue
               ┌───────────────────┐
-              │  play-worker      │  (keine eigene IP)
+              │  play-worker      │  (internal)
               │  FFmpeg + yt-dlp  │
               │  BullMQ Consumer  │
               └───────────────────┘
 ```
 
+Die konkreten Container-Adressen kommen aus der Deployment-Konfiguration
+(siehe `docker-compose.yml` bzw. Unraid-/Kubernetes-spezifische Varianten).
+Die All-in-One-Variante verwendet `127.0.0.1` + s6-overlay statt
+separate Container.
+
 ## Datenfluss: Upload
 
-```
+```text
 Browser          play-web          play-api          MinIO         play-worker
   │                │                  │                │                │
   │── drag&drop ──►│                  │                │                │
@@ -76,15 +81,17 @@ Exakt wie Upload, aber Source ist `yt-dlp`:
 
 ## Auth-Architektur
 
-```
+```text
 Better Auth (eigene User-DB)
    ├── Email/Passwort (default)
    ├── Passkey (WebAuthn) — später
    └── OIDC Plugin (später aktivierbar):
-        └── Issuer: https://auth.itsweber.net (Authentik)
+        └── Issuer: dein OIDC-Provider (z. B. Authentik, Keycloak)
 ```
 
-Sessions: Cookie-based, HTTP-only, `SameSite=Lax`, Domain `.itsweber.net` (für zukünftiges SSO über Subdomains).
+Sessions: Cookie-based, HTTP-only, `SameSite=Lax`. Über
+`AUTH_COOKIE_DOMAIN` konfigurierbar (Punkt-Prefix erlaubt
+SSO-Cookie-Sharing über Subdomains).
 
 ## Theming-Architektur
 
@@ -94,13 +101,13 @@ Siehe `03-theming.md` — kurz:
 
 ## Deployment-Modell
 
-- Single Unraid-Host, alle Container auf `br1`
-- Keine Orchestrierung (kein Swarm/k8s)
+- Single-Host oder Single-Container (All-in-One)
+- Keine Orchestrierung nötig (kein Swarm/k8s)
 - Zero-Downtime-Updates via `docker compose up -d --build` (rolling)
 - DB-Migrations in Prisma, werden im API-Entrypoint ausgeführt
 
 ## Performance-Annahmen
 
-- Zielgruppe: ≤ 100 gleichzeitige Viewer (Familie + Bekannte)
+- Zielgruppe: kleine bis mittlere Community (≤ 100 gleichzeitige Viewer)
 - Transcoding: ≤ 3 parallele Jobs (CPU), Queue puffert Rest
-- Storage-Wachstum: ~10 GB/Woche erwartet
+- Storage-Wachstum: stark abhängig von Upload-Rate, plane ≥ 100 GB initial

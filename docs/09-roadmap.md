@@ -78,9 +78,9 @@ auf GitHub + im Unraid Community Store.
 - [ ] Favicon-Upload im Admin
 - [ ] Watch-History-Schema + Watch-Later
 
-### Session 11 — Prod-Deploy auf Unraid
+### Session 11 — Prod-Deploy
 
-- [ ] `docker compose build` auf ITSWEBER-CORE
+- [ ] `docker compose build` auf dem Ziel-Host
 - [ ] NPM-Proxy-Konfig dokumentiert
 - [ ] `S3_PUBLIC_URL` korrekt gesetzt
 - [ ] Smoke-Tests unter Last
@@ -117,7 +117,7 @@ auf GitHub + im Unraid Community Store.
 - [ ] Meilisearch (falls Postgres-FTS zu dünn wird)
 - [ ] Donations / Super-Chat
 - [ ] Multi-Language UI (EN/DE)
-- [ ] GPU-Transcoding (sobald Frigate/CompreFace die GPU freigeben)
+- [ ] GPU-Transcoding (optional, `TRANSCODE_USE_GPU=1`)
 - [ ] CUSTOM_HTML-Block mit DOMPurify + iframe-sandbox
 - [ ] Age-Gate für 18+ Videos
 - [ ] ActivityPub (falls Federation jemals gewünscht wird)

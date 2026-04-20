@@ -8,7 +8,10 @@ import { trpc } from "@/lib/trpc";
 import {
   APP_NAME,
   APP_VERSION,
-  AUTHOR_NAME,
+  COPYRIGHT_NOTICE,
+  UPSTREAM_LICENSE,
+  UPSTREAM_NAME,
+  UPSTREAM_URL,
   VENDOR_NAME,
   VENDOR_URL,
 } from "@/lib/branding";
@@ -212,24 +215,35 @@ export function AdminSidebar({
         <span className="mono text-brand">@{user?.handle ?? "…"}</span>
       </div>
 
-      {/* Urheber-Hinweis am Fuß der Sidebar — nicht durch SiteSettings änderbar (AGPL-Attribution). */}
+      {/* Upstream-Attribution (AGPL-Pflicht) + optionales User-Branding. */}
       <div className="mt-6 border-t border-border px-3 pt-3 text-[10px] leading-relaxed text-dim">
         <div className="mono uppercase tracking-wider opacity-70">
           {APP_NAME} · {APP_VERSION}
         </div>
-        <div className="mt-0.5">
-          {"\u00A9"} {new Date().getFullYear()} {AUTHOR_NAME}
-        </div>
+        {COPYRIGHT_NOTICE && <div className="mt-0.5">{COPYRIGHT_NOTICE}</div>}
+        {VENDOR_NAME && VENDOR_URL && (
+          <div className="mt-0.5">
+            <a
+              href={VENDOR_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-brand"
+            >
+              {VENDOR_NAME}
+            </a>
+          </div>
+        )}
         <div className="mt-0.5">
           powered by{" "}
           <a
-            href={VENDOR_URL}
+            href={UPSTREAM_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-brand"
           >
-            {VENDOR_NAME}
-          </a>
+            {UPSTREAM_NAME}
+          </a>{" "}
+          · {UPSTREAM_LICENSE}
         </div>
       </div>
     </aside>
