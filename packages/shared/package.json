@@ -1,0 +1,26 @@
+{
+  "name": "@play/shared",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Infra-unabhängige Lib: Visibility-Logik, zod-Schemas, Utils — von FE + BE gemeinsam genutzt.",
+  "type": "module",
+  "files": [
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./visibility": {
+      "types": "./src/visibility.ts",
+      "default": "./src/visibility.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

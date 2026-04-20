@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — ITSWEBER Play</title>
+<link rel="stylesheet" href="assets/preview.css">
+<style>
+  /* Admin-spezifisch */
+  .admin-banner {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; margin-bottom: 16px;
+    background: color-mix(in srgb, var(--amber-500) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--amber-500) 40%, transparent);
+    border-radius: var(--r-md);
+    font-size: 13px; color: var(--fg);
+  }
+  .admin-banner .mono { color: var(--amber-500); }
+
+  .live-indicator {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 10px;
+    background: color-mix(in srgb, var(--success) 18%, transparent);
+    color: var(--success);
+    border-radius: var(--r-full);
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .live-indicator::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--success); box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 30%, transparent);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+  /* Preview-Page Inside Iframe-Ersatz */
+  .mini-nav {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  .mini-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+  .mini-brand img { width: 22px; height: 22px; filter: var(--logo-filter); }
+  .mini-links { display: flex; gap: 4px; margin-left: 20px; }
+  .mini-links a {
+    font-size: 12px; padding: 5px 10px; border-radius: var(--r-sm);
+    color: var(--fg-muted);
+  }
+  .mini-links a.active { color: var(--brand); background: color-mix(in srgb, var(--brand) 10%, transparent); }
+  .mini-hero {
+    margin: 20px 0; padding: 24px;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center;
+  }
+  .mini-hero-img { aspect-ratio: 16/9; background: #000; border-radius: var(--r-md); overflow: hidden; }
+  .mini-hero-img img { width: 100%; height: 100%; object-fit: cover; opacity: .88; }
+  .mini-hero h3 { margin: 0 0 10px; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .mini-hero p { margin: 0; color: var(--fg-muted); font-size: 13px; }
+  .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .mini-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 10px; }
+  .mini-card-thumb { aspect-ratio: 16/9; border-radius: var(--r-sm); margin-bottom: 8px; overflow: hidden; }
+  .mini-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .mini-card-title { font-size: 12px; font-weight: 600; line-height: 1.3; }
+  .mini-card-meta { font-size: 11px; color: var(--fg-muted); margin-top: 2px; }
+  .mini-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: var(--r-sm);
+    background: var(--brand); color: #081414;
+    font-size: 12px; font-weight: 600;
+    box-shadow: var(--sh-glow);
+  }
+
+  .diff-hint {
+    position: absolute; right: 20px; bottom: 20px;
+    background: var(--bg-elevated); border: 1px solid var(--border);
+    padding: 8px 12px; border-radius: var(--r-md);
+    font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .diff-hint .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand); }
+</style>
+</head>
+<body>
+
+<!-- ── Navigation ─────────────────────────────────────────── -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="brand-mark" href="home.html">
+      <img class="brand-logo" src="https://itsweber.de/uploads/media/logos/media_d5e82b218f8b98cd.png" alt="">
+      <span class="brand-name">ITSWEBER Play<sup>ADMIN</sup></span>
+    </a>
+    <div class="nav-links">
+      <a href="home.html">Plattform</a>
+      <a href="studio.html">Studio</a>
+      <a class="active" href="admin.html">Admin</a>
+    </div>
+    <div class="grow"></div>
+    <div class="live-indicator">Live-Preview</div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" id="btn-export">Export JSON</button>
+      <button class="btn btn-ghost" id="btn-reset">Reset</button>
+      <button class="btn btn-primary" id="btn-save">Speichern</button>
+      <div class="avatar" title="admin">A</div>
+    </div>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <!-- ── Admin Sidebar ────────────────────────────────────── -->
+  <aside class="side">
+    <div class="side-ctx">ITSWEBER Play · Admin</div>
+
+    <div class="side-group-title">Overview</div>
+    <nav class="side-group">
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        Nutzer
+        <span class="pill">47</span>
+      </a>
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        Videos
+        <span class="pill">312</span>
+      </a>
+      <a href="#">Moderation<span class="pill">3</span></a>
+    </nav>
+
+    <div class="side-group-title">Erscheinungsbild</div>
+    <nav class="side-group">
+      <a class="active" href="#theme">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        Theme-Editor
+      </a>
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        Startseiten-Blöcke
+      </a>
+      <a href="#">Logo &amp; Favicon</a>
+      <a href="#">Custom CSS</a>
+    </nav>
+
+    <div class="side-group-title">System</div>
+    <nav class="side-group">
+      <a href="#">Transcoding-Queue<span class="pill">2</span></a>
+      <a href="#">Storage</a>
+      <a href="#">Logs</a>
+      <a href="#">Integrationen</a>
+      <a href="#">Einstellungen</a>
+    </nav>
+  </aside>
+
+  <!-- ── Main ─────────────────────────────────────────────── -->
+  <main class="main">
+
+    <div class="sp-between rise">
+      <div>
+        <h1 class="page-title">Theme-Editor</h1>
+        <p class="page-sub">Jede Änderung wirkt live auf die Preview rechts. Speichern überträgt auf die gesamte Plattform.</p>
+      </div>
+    </div>
+
+    <div class="admin-banner">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      Änderungen sind aktuell <span class="mono">unsaved</span> — teste frei, speichere erst am Ende. Rollback via „Reset".
+    </div>
+
+    <!-- Stats -->
+    <div class="stats rise">
+      <div class="stat">
+        <div class="stat-label">Aktive Nutzer</div>
+        <div class="stat-value">47</div>
+        <div class="stat-delta up">+3</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Videos (Live)</div>
+        <div class="stat-value">312</div>
+        <div class="stat-delta up">+8</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Storage</div>
+        <div class="stat-value">284<span style="font-size:16px;margin-left:4px">GB</span></div>
+        <div class="stat-delta up">+12 GB</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Jobs aktiv</div>
+        <div class="stat-value">2</div>
+        <div class="stat-delta">warten: 1</div>
+      </div>
+    </div>
+
+    <!-- Theme Editor Shell -->
+    <section class="theme-shell rise" id="theme">
+
+      <!-- LINKS: Token-Gruppen ───────────────────── -->
+      <div class="panel">
+        <h3 class="panel-title">Design Tokens</h3>
+
+        <div class="token-group">
+          <div class="token-group-title">Farben · Oberflächen</div>
+
+          <label class="token-row">
+            <span class="token-name">--bg</span>
+            <span class="row">
+              <input type="color" data-var="--bg" value="#08090d">
+              <span class="token-val">#08090d</span>
+            </span>
+          </label>
+          <label class="token-row">
+            <span class="token-name">--bg-surface</span>
+            <span class="row">
+              <input type="color" data-var="--bg-surface" value="#161b22">
+              <span class="token-val">#161b22</span>
+            </span>
+          </label>
+          <label class="token-row">
+            <span class="token-name">--bg-elevated</span>
+            <span class="row">
+              <input type="color" data-var="--bg-elevated" value="#21262d">
+              <span class="token-val">#21262d</span>
+            </span>
+          </label>
+        </div>
+
+        <div class="token-group">
+          <div class="token-group-title">Farben · Brand</div>
+
+          <label class="token-row">
+            <span class="token-name">--brand</span>
+            <span class="row">
+              <input type="color" data-var="--brand" value="#3ba7a7">
+              <span class="token-val">#3ba7a7</span>
+            </span>
+          </label>
+          <label class="token-row">
+            <span class="token-name">--brand-hover</span>
+            <span class="row">
+              <input type="color" data-var="--brand-hover" value="#4fb5b5">
+              <span class="token-val">#4fb5b5</span>
+            </span>
+          </label>
+          <label class="token-row">
+            <span class="token-name">--fg</span>
+            <span class="row">
+              <input type="color" data-var="--fg" value="#e6edf3">
+              <span class="token-val">#e6edf3</span>
+            </span>
+          </label>
+          <label class="token-row">
+            <span class="token-name">--fg-muted</span>
+            <span class="row">
+              <input type="color" data-var="--fg-muted" value="#8b949e">
+              <span class="token-val">#8b949e</span>
+            </span>
+          </label>
+        </div>
+
+        <div class="token-group">
+          <div class="token-group-title">Form · Radien</div>
+
+          <label class="token-row">
+            <span class="token-name">--r-md</span>
+            <span class="row">
+              <input type="range" data-var="--r-md" data-unit="px" min="0" max="30" value="10">
+              <span class="token-val">10px</span>
+            </span>
+          </label>
+          <label class="token-row">
+            <span class="token-name">--r-lg</span>
+            <span class="row">
+              <input type="range" data-var="--r-lg" data-unit="px" min="0" max="40" value="16">
+              <span class="token-val">16px</span>
+            </span>
+          </label>
+          <label class="token-row">
+            <span class="token-name">--r-xl</span>
+            <span class="row">
+              <input type="range" data-var="--r-xl" data-unit="px" min="0" max="60" value="24">
+              <span class="token-val">24px</span>
+            </span>
+          </label>
+        </div>
+
+        <div class="token-group">
+          <div class="token-group-title">Logo · Filter</div>
+          <select id="logo-filter" style="width:100%;background:var(--bg);color:var(--fg);border:1px solid var(--border);padding:8px 10px;border-radius:var(--r-sm);font-family:var(--font-mono);font-size:12px">
+            <option value="none">none</option>
+            <option value="drop-shadow(0 0 14px color-mix(in srgb, var(--brand) 60%, transparent))" selected>glow (default)</option>
+            <option value="drop-shadow(0 0 6px rgba(59,167,167,.6))">softGlow</option>
+            <option value="grayscale(1) brightness(1.1) sepia(.3) hue-rotate(140deg) saturate(3)">duotone</option>
+            <option value="drop-shadow(0 4px 8px rgba(0,0,0,.5))">shadow</option>
+            <option value="invert(1)">invert</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- MITTE: Live Preview ─────────────────────── -->
+      <div class="preview-frame">
+        <div class="preview-toolbar">
+          <span class="preview-dot r"></span><span class="preview-dot y"></span><span class="preview-dot g"></span>
+          <span class="preview-url">https://play.itsweber.net/</span>
+          <span class="mono-sm" style="color:var(--fg-muted)">auto-refresh</span>
+        </div>
+        <div class="preview-body" id="preview-body">
+
+          <div class="mini-nav">
+            <div class="mini-brand">
+              <img src="https://itsweber.de/uploads/media/logos/media_d5e82b218f8b98cd.png" alt="">
+              ITSWEBER Play
+            </div>
+            <div class="mini-links">
+              <a class="active" href="#">Entdecken</a>
+              <a href="#">Kanäle</a>
+              <a href="#">Abos</a>
+              <a href="#">Bibliothek</a>
+            </div>
+            <div class="grow"></div>
+            <a class="mini-btn" href="#">Anmelden</a>
+          </div>
+
+          <div class="mini-hero">
+            <div class="mini-hero-img">
+              <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=800&q=70" alt="">
+            </div>
+            <div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--brand);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Featured · KW 16</div>
+              <h3>Smart Home Blackout — wenn dein Server die Lichter ausknipst.</h3>
+              <p>ITSWEBER Offiziell · 18:42 · 1.248 Views</p>
+              <div style="margin-top:14px"><a class="mini-btn" href="#">▶ Jetzt ansehen</a></div>
+            </div>
+          </div>
+
+          <div class="mini-grid">
+            <div class="mini-card">
+              <div class="mini-card-thumb"><img src="https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=320&q=70" alt=""></div>
+              <div class="mini-card-title">Frigate + CompreFace</div>
+              <div class="mini-card-meta">2.4k Views · vor 5 Std</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-thumb"><img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=320&q=70" alt=""></div>
+              <div class="mini-card-title">Kellerrenovierung Teil 3</div>
+              <div class="mini-card-meta">612 Views · gestern</div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-thumb"><img src="https://images.unsplash.com/photo-1581091012184-5c5c7a1b66c8?auto=format&fit=crop&w=320&q=70" alt=""></div>
+              <div class="mini-card-title">Unraid 7.2 Setup</div>
+              <div class="mini-card-meta">18.2k Views · vor 3 T</div>
+            </div>
+          </div>
+
+          <div class="diff-hint"><span class="dot"></span> <span id="diff-count">0 Änderungen</span></div>
+        </div>
+      </div>
+
+      <!-- RECHTS: Presets + Custom CSS ─────────────── -->
+      <div class="panel">
+        <h3 class="panel-title">Presets</h3>
+        <div class="preset-list">
+          <button class="preset active" data-preset="dark">
+            <span class="preset-swatch" style="background:linear-gradient(135deg,#0e1116 50%,#3ba7a7 50%)"></span>
+            <span>
+              <div class="preset-name">ITSWEBER Dark</div>
+              <div class="preset-sub">default · #3ba7a7</div>
+            </span>
+          </button>
+          <button class="preset" data-preset="light">
+            <span class="preset-swatch" style="background:linear-gradient(135deg,#ffffff 50%,#2d8a8a 50%)"></span>
+            <span>
+              <div class="preset-name">ITSWEBER Light</div>
+              <div class="preset-sub">hell · #2d8a8a</div>
+            </span>
+          </button>
+          <button class="preset" data-preset="contrast">
+            <span class="preset-swatch" style="background:linear-gradient(135deg,#000 50%,#00ffff 50%)"></span>
+            <span>
+              <div class="preset-name">High Contrast</div>
+              <div class="preset-sub">a11y · #00ffff</div>
+            </span>
+          </button>
+          <button class="preset" data-preset="retro">
+            <span class="preset-swatch" style="background:linear-gradient(135deg,#2b1e1e 50%,#ff6b35 50%)"></span>
+            <span>
+              <div class="preset-name">Retro</div>
+              <div class="preset-sub">fun · #ff6b35</div>
+            </span>
+          </button>
+        </div>
+
+        <h3 class="panel-title" style="margin-top:24px">Custom CSS</h3>
+        <textarea class="custom-css" spellcheck="false" id="custom-css">/* läuft nach allen Tokens — volle Kontrolle */
+.vcard:hover .vcard-thumb {
+  transform: translateY(-6px) scale(1.01);
+}
+.chip.active {
+  background: var(--brand);
+  color: var(--bg);
+}</textarea>
+        <button class="btn btn-ghost" style="width:100%;margin-top:10px" id="apply-css">Custom CSS anwenden</button>
+
+        <h3 class="panel-title" style="margin-top:24px">Export / Import</h3>
+        <div style="display:grid;gap:8px">
+          <button class="btn btn-ghost" style="width:100%">⬇ Theme als JSON</button>
+          <button class="btn btn-ghost" style="width:100%">⬆ JSON importieren</button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<style id="runtime-custom"></style>
+
+<script>
+  const root = document.documentElement;
+  let dirty = 0;
+
+  const updateDiff = () => {
+    dirty++;
+    document.getElementById("diff-count").textContent = dirty + " Änderung" + (dirty === 1 ? "" : "en");
+  };
+
+  // Color & range inputs → CSS variables
+  document.querySelectorAll("input[data-var]").forEach(inp => {
+    inp.addEventListener("input", e => {
+      const name = e.target.dataset.var;
+      const unit = e.target.dataset.unit || "";
+      const val = e.target.value + unit;
+      root.style.setProperty(name, val);
+      e.target.nextElementSibling.textContent = val;
+      updateDiff();
+    });
+  });
+
+  // Logo filter
+  document.getElementById("logo-filter").addEventListener("change", e => {
+    root.style.setProperty("--logo-filter", e.target.value);
+    updateDiff();
+  });
+
+  // Presets
+  const presets = {
+    dark: {
+      "--bg": "#08090d", "--bg-surface": "#161b22", "--bg-elevated": "#21262d",
+      "--fg": "#e6edf3", "--fg-muted": "#8b949e",
+      "--brand": "#3ba7a7", "--brand-hover": "#4fb5b5"
+    },
+    light: {
+      "--bg": "#ffffff", "--bg-surface": "#f6f8fa", "--bg-elevated": "#eef3f8",
+      "--fg": "#0e1116", "--fg-muted": "#484f58",
+      "--brand": "#2d8a8a", "--brand-hover": "#236e6e"
+    },
+    contrast: {
+      "--bg": "#000000", "--bg-surface": "#0a0a0a", "--bg-elevated": "#1a1a1a",
+      "--fg": "#ffffff", "--fg-muted": "#cccccc",
+      "--brand": "#00ffff", "--brand-hover": "#66ffff"
+    },
+    retro: {
+      "--bg": "#1a1410", "--bg-surface": "#2b1e1e", "--bg-elevated": "#3a2828",
+      "--fg": "#f4e4d0", "--fg-muted": "#c4a478",
+      "--brand": "#ff6b35", "--brand-hover": "#ff8755"
+    }
+  };
+
+  document.querySelectorAll(".preset").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".preset").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      const preset = presets[btn.dataset.preset];
+      Object.entries(preset).forEach(([k, v]) => {
+        root.style.setProperty(k, v);
+        const inp = document.querySelector(`input[data-var="${k}"]`);
+        if (inp) { inp.value = v; inp.nextElementSibling.textContent = v; }
+      });
+      updateDiff();
+    });
+  });
+
+  // Custom CSS sandbox
+  document.getElementById("apply-css").addEventListener("click", () => {
+    document.getElementById("runtime-custom").textContent = document.getElementById("custom-css").value;
+    updateDiff();
+  });
+
+  // Reset
+  document.getElementById("btn-reset").addEventListener("click", () => {
+    document.querySelectorAll("input[data-var]").forEach(i => root.style.removeProperty(i.dataset.var));
+    root.style.removeProperty("--logo-filter");
+    document.getElementById("runtime-custom").textContent = "";
+    dirty = 0;
+    document.getElementById("diff-count").textContent = "0 Änderungen";
+    location.reload();
+  });
+
+  document.getElementById("btn-save").addEventListener("click", () => {
+    alert("In der echten App: PATCH /trpc/admin.theme.update — alle Nutzer sehen live die neuen Tokens.\n\nÄnderungen: " + dirty);
+  });
+
+  document.getElementById("btn-export").addEventListener("click", () => {
+    const styles = getComputedStyle(root);
+    const snapshot = {};
+    ["--bg","--bg-surface","--bg-elevated","--fg","--fg-muted","--brand","--brand-hover","--r-md","--r-lg","--r-xl"]
+      .forEach(k => snapshot[k] = styles.getPropertyValue(k).trim());
+    const blob = new Blob([JSON.stringify({ name: "custom-theme", overrides: snapshot }, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "itsweber-play-theme.json";
+    a.click();
+  });
+
+  // Initial custom css
+  document.getElementById("runtime-custom").textContent = document.getElementById("custom-css").value;
+</script>
+</body>
+</html>

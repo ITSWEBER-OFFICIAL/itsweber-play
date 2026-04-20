@@ -1,0 +1,706 @@
+// ITSWEBER Play — Datenmodell v0.1 (MVP)
+// Abgestimmt auf docs/04-api.md, docs/05-video-pipeline.md, docs/06-auth.md.
+// User/Session/Account/Verification-Shape folgt Better-Auth-Konventionen
+// (https://www.better-auth.com/docs/concepts/database), mit additional-fields
+// für unsere Domäne (handle, role, banned). Namens-Mapping `name`→`displayName`
+// und `image`→`avatarUrl` passiert in apps/api/src/auth.ts.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  MODERATOR
+  CREATOR
+  VIEWER
+}
+
+enum Visibility {
+  PUBLIC
+  UNLISTED
+  PRIVATE
+  LOGGED_IN
+}
+
+enum VideoSource {
+  UPLOAD
+  EXTERNAL
+}
+
+enum VideoStatus {
+  PENDING
+  PROCESSING
+  LIVE
+  FAILED
+}
+
+// Klassifikation nach Aspect-Ratio + Dauer. Worker setzt beim Transcode.
+// SHORT = vertikales Video (height > width) mit Dauer ≤ 60 s.
+enum VideoFormat {
+  LONG
+  SHORT
+}
+
+enum ReportTargetType {
+  VIDEO
+  COMMENT
+  CHANNEL
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED_TAKEDOWN
+  RESOLVED_IGNORED
+}
+
+enum NotificationType {
+  NEW_UPLOAD
+  COMMENT_REPLY
+  SYSTEM
+}
+
+// Block-Typen für Startseiten-Composer (Theming Ebene 6). CUSTOM_HTML fehlt
+// absichtlich — Sandbox-Anforderungen brauchen eigenes Review.
+// SHORTS_ROW = horizontal scrollendes 9:16-Karussell (Format = SHORT).
+// CHANNEL_ROW = horizontale Kanal-Empfehlung (für Discovery).
+enum PageBlockType {
+  HERO
+  VIDEO_GRID
+  CATEGORY_CHIPS
+  CTA_BANNER
+  SHORTS_ROW
+  CHANNEL_ROW
+  COMMUNITY_ROW
+}
+
+// Registrierungsmodus für Self-Sign-Up. Admin schaltet das global in
+// SiteSettings. OPEN = jeder kann sich registrieren; INVITE = nur mit
+// Invite-Code (MVP: 403, Code-Tokens kommen v0.3); CLOSED = keine Registrierung.
+enum RegistrationMode {
+  OPEN
+  INVITE
+  CLOSED
+}
+
+// Multi-Reactions: LIKE ist der Default (kompatibel mit alter Reaction-Table).
+enum ReactionKind {
+  LIKE
+  FIRE
+  LOL
+  WOW
+  SAD
+}
+
+// DM-Sichtbarkeit: Creator kann DMs einschränken.
+enum DmPermission {
+  ALL
+  SUBSCRIBERS_ONLY
+  NONE
+}
+
+// ─── Categories ─────────────────────────────────────────────────────────
+
+model Category {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  // Unicode-Icon oder Emoji; Admin kann vorgeben, wird im Chip gerendert.
+  icon        String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  videos          Video[]
+  defaultForSites SiteSettings[] @relation("SiteSettingsDefaultCategory")
+
+  @@index([order])
+}
+
+// ─── Identity ─────────────────────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  displayName   String
+  avatarUrl     String?
+  handle        String   @unique
+  role          Role     @default(CREATOR)
+  banned        Boolean  @default(false)
+  // E-Mail-Benachrichtigungs-Einstellungen. Shape:
+  // { emailOnComment: boolean, emailOnSubscriber: boolean }
+  // Json statt eigenem Model, weil read/write immer atomar auf User läuft.
+  // { emailOnComment: boolean, emailOnSubscriber: boolean, digestDaily: boolean, autoCaptions: boolean }
+  notificationPrefs Json         @default("{\"emailOnComment\":false,\"emailOnSubscriber\":false,\"digestDaily\":false,\"autoCaptions\":true}")
+  dmPermission      DmPermission @default(ALL)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  channels          Channel[]
+  videos            Video[]        @relation("VideoOwner")
+  sessions          Session[]
+  accounts          Account[]
+  reactions         Reaction[]
+  comments          Comment[]
+  subscriptions     Subscription[] @relation("SubscriptionSubscriber")
+  reportsCreated    Report[]       @relation("ReportReporter")
+  reportsResolved   Report[]       @relation("ReportResolver")
+  notifications     Notification[]
+  watchHistory      WatchHistory[]
+  watchLater        WatchLater[]
+  playlists         Playlist[]
+  communityPosts    CommunityPost[]
+  dmsSent           DirectMessage[] @relation("DmSender")
+  dmsReceived       DirectMessage[] @relation("DmRecipient")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// Better-Auth-native Account-Modell: speichert Credential-Passwort-Hashes UND
+// OAuth-/OIDC-Verknüpfungen (providerId="credential" | "authentik" | …).
+// Ersetzt unser altes OidcAccount-Modell vollständig.
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  password              String?
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+// ─── Creator Surfaces ─────────────────────────────────────────────────────
+
+model Channel {
+  id          String   @id @default(cuid())
+  ownerId     String
+  slug        String   @unique
+  displayName String
+  description String?
+  about       String?
+  // Array of { platform: string, url: string } — platforms: youtube,
+  // twitter, github, website, mastodon, …
+  socialLinks Json     @default("[]")
+  avatarUrl   String?
+  bannerUrl   String?
+  // MinIO keys — when set, URL is composed via S3_PUBLIC_URL + bucket + key.
+  avatarAssetKey String?
+  bannerAssetKey String?
+  // Accent-Farbe für Kanal-Header-Gradient, Subscribe-Button, Featured-Badges.
+  // Hex (#RRGGBB) oder NULL → Plattform-Brand fallback. Zod-regex am API-Gate.
+  accentColor String?
+  // Sektions-Reihenfolge auf /c/[slug]. Json-Array aus Keys:
+  // ["featured","latest","shorts","popular","playlists","about"].
+  // UI-Composer whitelistet Keys → unbekannte Werte werden ignoriert.
+  sectionOrder Json   @default("[\"featured\",\"latest\",\"shorts\",\"popular\",\"about\"]")
+  // Gepinntes Featured-Video (groß oben auf Kanal-Seite).
+  featuredVideoId String?
+  // Trailer für Non-Subscriber (autoplay muted).
+  trailerVideoId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  videos        Video[]
+  subscriptions Subscription[] @relation("SubscriptionChannel")
+  playlists     Playlist[]
+  featuredVideo Video?         @relation("ChannelFeatured", fields: [featuredVideoId], references: [id], onDelete: SetNull)
+  trailerVideo    Video?          @relation("ChannelTrailer", fields: [trailerVideoId], references: [id], onDelete: SetNull)
+  communityPosts  CommunityPost[]
+
+  @@index([ownerId])
+  @@index([featuredVideoId])
+  @@index([trailerVideoId])
+}
+
+// Viewer abonniert einen Kanal. Composite PK — jeder User max. einmal pro Kanal.
+model Subscription {
+  subscriberId String
+  channelId    String
+  // Notifications für neue Uploads? Default ja; Viewer kann pro Kanal toggeln.
+  notify       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  subscriber User    @relation("SubscriptionSubscriber", fields: [subscriberId], references: [id], onDelete: Cascade)
+  channel    Channel @relation("SubscriptionChannel", fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@id([subscriberId, channelId])
+  @@index([channelId])
+  @@index([createdAt])
+  // Composite-Index für die Notification-Lookup-Query beim Transcode-Finalize
+  // (WHERE channelId=? AND notify=true). Ohne diesen Index scannt Postgres bei
+  // jeder Publikation den kompletten channelId-Bucket.
+  @@index([channelId, notify])
+  // Composite für `/subs`-Feed: User-Dashboard listet alle Channels, denen der
+  // User gerade folgt, sortiert nach Abo-Zeitpunkt (neueste zuerst).
+  @@index([subscriberId, createdAt])
+}
+
+// ─── Content ──────────────────────────────────────────────────────────────
+
+model Video {
+  id            String      @id @default(cuid())
+  slug          String      @unique
+  ownerId       String
+  channelId     String
+  title         String
+  description   String?
+  // Free-text tags, stored lower-case for case-insensitive matching later.
+  tags          String[]    @default([])
+  // Chapter marker array: [{ timeSec: number, title: string }] — player
+  // reads these and renders the timeline markers.
+  chapters      Json        @default("[]")
+  commentsEnabled Boolean   @default(true)
+  // Haupt-Kategorie (1:1). Multi-Category per Join-Table wäre overkill für MVP.
+  categoryId    String?
+  source        VideoSource @default(UPLOAD)
+  sourceUrl     String?
+  visibility    Visibility  @default(PRIVATE)
+  status        VideoStatus @default(PENDING)
+  format        VideoFormat @default(LONG)
+  durationSec   Int?
+  width         Int?
+  height        Int?
+  codec         String?
+  bitrateKbps   Int?
+  // Currently-selected thumbnail (MinIO key).
+  thumbnailKey  String?
+  // All thumbnail candidates the worker produced — Studio editor lets the
+  // creator pick one; `thumbnailKey` is set from this list.
+  thumbnailCandidates String[] @default([])
+  viewCount     Int         @default(0)
+  failureReason String?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  publishedAt          DateTime?
+  scheduledPublishAt   DateTime?
+
+  owner        User          @relation("VideoOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  channel      Channel       @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  category     Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  reactions    Reaction[]
+  comments     Comment[]
+  watchHistory WatchHistory[]
+  watchLater   WatchLater[]
+  captions     VideoCaption[]
+  playlistItems PlaylistItem[]
+  featuredOn   Channel[]     @relation("ChannelFeatured")
+  trailerOn    Channel[]     @relation("ChannelTrailer")
+
+  @@index([ownerId])
+  @@index([channelId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([format, visibility, status, publishedAt])
+  @@index([visibility, status, publishedAt])
+  @@index([createdAt])
+}
+
+model Reaction {
+  userId    String
+  videoId   String
+  kind      ReactionKind @default(LIKE)
+  createdAt DateTime     @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@id([userId, videoId])
+  @@index([videoId])
+  @@index([videoId, kind])
+}
+
+model Comment {
+  id                 String    @id @default(cuid())
+  videoId            String
+  userId             String
+  parentId           String?
+  body               String
+  deletedAt          DateTime?
+  pinnedAt           DateTime?
+  heartedByCreator   Boolean   @default(false)
+  moderationScore    Float?
+  moderationLabel    String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  video   Video     @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentThread", fields: [parentId], references: [id], onDelete: SetNull)
+  replies Comment[] @relation("CommentThread")
+
+  @@index([videoId, createdAt])
+  @@index([videoId, pinnedAt])
+  @@index([userId])
+  @@index([parentId])
+}
+
+// ─── Moderation / Reports ─────────────────────────────────────────────────
+// Jede Meldung hat genau ein Target (VIDEO, COMMENT oder CHANNEL). Die
+// Reference-IDs bleiben optional, weil pro Row nur eines gesetzt ist. Die
+// Moderations-Queue im Admin iteriert über OPEN-Reports.
+
+model Report {
+  id          String           @id @default(cuid())
+  targetType  ReportTargetType
+  videoId     String?
+  commentId   String?
+  channelId   String?
+  reporterId  String
+  reason      String
+  note        String?
+  status      ReportStatus     @default(OPEN)
+  resolvedById String?
+  resolvedAt  DateTime?
+  createdAt   DateTime         @default(now())
+
+  reporter   User  @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  resolvedBy User? @relation("ReportResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([targetType, videoId])
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────
+// In-App-Badges im Header. Externe E-Mail-Benachrichtigungen kommen später.
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+}
+
+// ─── Theming (Ebene 3-5) ──────────────────────────────────────────────────
+// Singleton-Row (id="singleton") mit den aktuellen Admin-Overrides. Wird vom
+// Next-RSC-Layout per SSR-Fetch gelesen und als <style id="theme-vars"> /
+// <style id="theme-custom"> in den <head> gerendert. Live-Updates über SSE.
+
+model ThemeSettings {
+  id             String   @id @default("singleton")
+  tokensOverride Json     @default("{}")
+  customCss      String?
+  logoFilter     String?
+  // MinIO-Key im play-assets-Bucket (z. B. "logo/<uuid>.png"). URL wird zur
+  // Laufzeit aus S3_ENDPOINT + bucket + key komponiert.
+  logoAssetKey   String?
+  activePreset   String?
+  updatedAt      DateTime @updatedAt
+  updatedBy      String?
+}
+
+// History für Custom-CSS-Rollback. Wird bei jedem setCustomCss geschrieben,
+// begrenzt auf letzte 20 (ältere werden im Handler gepurged).
+model ThemeRevision {
+  id         String   @id @default(cuid())
+  customCss  String?
+  updatedBy  String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// Layout-Block-Composer (Theming Ebene 6). Eine Reihe pro Block, `position`
+// bestimmt Reihenfolge. pageSlug bereits hier drin, damit Multi-Page später
+// (z. B. /browse, /library) ohne Schema-Change geht — MVP nur "home".
+model PageBlock {
+  id        String        @id @default(cuid())
+  pageSlug  String        @default("home")
+  position  Int
+  type      PageBlockType
+  enabled   Boolean       @default(true)
+  config    Json          @default("{}")
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([pageSlug, position])
+}
+
+// ─── Legal CMS (Ebene Static-Pages) ──────────────────────────────────────────
+// Admin-only. Impressum/Datenschutz/AGB und beliebige weitere statische Seiten
+// werden hier gepflegt und über /[slug] gerendert. body enthält HTML (kein
+// Markdown-Parser im Browser nötig — Admin schreibt HTML oder kopiert aus Word).
+// showInFooter + order steuern den dynamischen Footer-Block.
+model StaticPage {
+  slug        String   @id
+  title       String
+  body        String   @db.Text
+  published   Boolean  @default(true)
+  showInFooter Boolean @default(true)
+  order       Int      @default(0)
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+}
+
+// ─── Watch-History + Watch-Later ─────────────────────────────────────────────
+// Composite-PK: jeder User hat pro Video max. einen Eintrag.
+// watchedAt wird bei jedem Aufruf geupsert → immer der neueste Stand.
+
+model WatchHistory {
+  userId    String
+  videoId   String
+  watchedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@id([userId, videoId])
+  @@index([userId, watchedAt])
+}
+
+// Watch-Later-Merkliste. createdAt = Zeitpunkt des Hinzufügens.
+model WatchLater {
+  userId    String
+  videoId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@id([userId, videoId])
+  @@index([userId, createdAt])
+}
+
+// Audit-Log: jeder schreibende Theme-Call (update, applyPreset, setCustomCss,
+// rollback, import) landet hier mit User, Action + Payload-Hint. Getrennt von
+// ThemeRevision, weil dort nur Custom-CSS-Snapshots liegen.
+model ThemeAuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  payload   Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId])
+}
+
+// ─── Site Settings (Singleton, admin-only) ───────────────────────────────
+// Globale Plattform-Einstellungen. Singleton-Row id="singleton" — analog
+// ThemeSettings. Admin-UI liegt unter /admin/settings.
+
+model SiteSettings {
+  id                     String           @id @default("singleton")
+  siteName               String           @default("ITSWEBER Play")
+  siteTagline            String           @default("Die Plattform für eigene Stimmen.")
+  contactEmail           String           @default("")
+  defaultLocale          String           @default("de")
+  registrationMode       RegistrationMode @default(OPEN)
+  defaultVisibility      Visibility       @default(PRIVATE)
+  defaultCommentsEnabled Boolean          @default(true)
+  defaultCategoryId      String?
+  // First-Run-Wizard: solange false → Next-Middleware leitet Browser auf
+  // /setup, der publicProcedure setup.complete flippt das nach erfolgreichem
+  // Wizard-Lauf auf true. Migrations-Default ist false, damit auch bestehende
+  // Installationen einmal durch den Wizard gehen — INITIAL_ADMIN_EMAIL als
+  // Env-Bypass siehe apps/api/src/trpc/routers/setup.ts.
+  setupCompleted         Boolean          @default(false)
+  setupCompletedAt       DateTime?
+  setupCompletedBy       String?
+  updatedAt              DateTime         @updatedAt
+  updatedBy              String?
+
+  defaultCategory Category? @relation("SiteSettingsDefaultCategory", fields: [defaultCategoryId], references: [id], onDelete: SetNull)
+}
+
+// ─── Captions / Untertitel ──────────────────────────────────────────────
+// Ein Caption-Track pro Sprache. assetKey zeigt auf eine VTT-Datei in MinIO.
+// Hochgeladene SRT werden beim Upload-Handler zu VTT konvertiert, damit der
+// Player nichts Anderes als VTT verarbeiten muss.
+
+model VideoCaption {
+  id             String   @id @default(cuid())
+  videoId        String
+  // ISO 639-1: "de", "en", "fr", …
+  language       String
+  // User-facing: "Deutsch", "English (auto)"
+  label          String
+  // MinIO key: captions/<videoId>/<lang>.vtt im play-assets-Bucket.
+  assetKey       String
+  isDefault      Boolean  @default(false)
+  // true = erzeugt von Whisper-Auto-Captions-Worker
+  isAutoGenerated Boolean @default(false)
+  createdAt      DateTime @default(now())
+
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, language])
+  @@index([videoId])
+}
+
+// ─── Playlists ──────────────────────────────────────────────────────────
+// Kanal-gebundene Playlists. Position ist Int — beim Reorder schreibt der
+// Router alle betroffenen Positionen in einer Transaktion neu.
+
+model Playlist {
+  id          String     @id @default(cuid())
+  ownerId     String
+  channelId   String
+  title       String
+  description String?
+  visibility  Visibility @default(PUBLIC)
+  slug        String     @unique
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  owner   User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  channel Channel        @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  items   PlaylistItem[]
+
+  @@index([channelId])
+  @@index([ownerId])
+}
+
+model PlaylistItem {
+  id         String   @id @default(cuid())
+  playlistId String
+  videoId    String
+  position   Int
+  addedAt    DateTime @default(now())
+
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  video    Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, videoId])
+  @@index([playlistId, position])
+}
+
+// ─── SMTP / E-Mail-Versand (Singleton, admin-only) ──────────────────────
+// Globale SMTP-Konfiguration. Lazy-Singleton-Transporter in
+// apps/api/src/email/transport.ts liest die Row beim ersten Versand-Aufruf;
+// das Admin-UI invalidiert den Cache beim Speichern (SSE-Bus oder Process-
+// Restart im Dev). Password wird unverschlüsselt in der DB gehalten — lokal
+// ausreichend, Prod-Wechsel auf Secret-Manager ist Backlog-Item.
+model SmtpSettings {
+  id             String    @id @default("singleton")
+  host           String    @default("")
+  port           Int       @default(587)
+  secure         Boolean   @default(false)
+  user           String    @default("")
+  password       String    @default("")
+  fromName       String    @default("ITSWEBER Play")
+  fromAddress    String    @default("")
+  lastTestAt     DateTime?
+  lastTestResult String?
+  updatedAt      DateTime  @updatedAt
+  updatedBy      String?
+}
+
+// Editierbare E-Mail-Templates. Jede Row entspricht einem System-Template
+// (welcome, email-verify, password-reset, …). Beim ersten Abruf wird die Row
+// per upsert angelegt (Default = hardcodiertes Template aus templates.ts als
+// initialer HTML/Text-Inhalt). Admin kann Subject, HTML und Plaintext anpassen.
+// Variablen werden per {{variablenName}}-Syntax interpoliert.
+model EmailTemplate {
+  id          String   @id  // = TemplateName-Enum-Value: "welcome", "email-verify", …
+  subject     String
+  htmlBody    String   @db.Text
+  textBody    String   @db.Text
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+}
+
+// ─── Community Posts ─────────────────────────────────────────────────────
+// Kanal-Tab "Community": Text/Bild/Poll-Beiträge eines Creators.
+
+model CommunityPost {
+  id          String    @id @default(cuid())
+  channelId   String
+  authorId    String
+  body        String    @db.Text
+  imageKey    String?
+  pollOptions Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  author  User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  votes   CommunityPollVote[]
+
+  @@index([channelId, createdAt])
+  @@index([authorId])
+}
+
+model CommunityPollVote {
+  postId    String
+  userId    String
+  optionIdx Int
+  createdAt DateTime @default(now())
+
+  post CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([postId, userId])
+}
+
+// ─── Direct Messages ─────────────────────────────────────────────────────
+// 1:1-Nachrichten. Creator kann via dmPermission einschränken wer schreiben darf.
+
+model DirectMessage {
+  id          String    @id @default(cuid())
+  senderId    String
+  recipientId String
+  body        String    @db.Text
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  sender    User @relation("DmSender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient User @relation("DmRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([senderId, recipientId, createdAt])
+  @@index([recipientId, createdAt])
+}

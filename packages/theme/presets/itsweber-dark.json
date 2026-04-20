@@ -1,0 +1,12 @@
+{
+  "name": "ITSWEBER Dark",
+  "description": "Default-Theme. Dunkle Oberfläche mit Teal-Akzent (ITSWEBER-Signal-Farbe). Abgeleitet vom itsweber.de-Gesamteindruck, explizit NICHT am aktuellen Hero orientiert.",
+  "overrides": {
+    "color.neutral.900": "#0e1116",
+    "color.neutral.800": "#161b22",
+    "color.neutral.700": "#1f2630",
+    "color.teal.500":    "#3ba7a7",
+    "color.teal.600":    "#2d8a8a"
+  },
+  "logoFilter": "glow"
+}

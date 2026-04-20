@@ -1,0 +1,10 @@
+#!/bin/bash
+# Fastify API auf 127.0.0.1:4000. Bindet intern, Nginx proxied extern.
+set -e
+cd /app/apps/api
+# API_PORT erzwingen, API_HOST ebenfalls — die API selbst bindet per Default 0.0.0.0,
+# wir wollen aber nicht, dass jemand via VLAN am Port 4000 vorbei am Nginx vorbeigeht.
+export API_PORT=4000
+export HOST=127.0.0.1
+# node_modules/.bin muss im PATH sein, pnpm start → tsx.
+exec pnpm start

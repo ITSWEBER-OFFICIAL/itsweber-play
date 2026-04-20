@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neuer Kommentar zu deinem Video</title>
+</head>
+<body style="margin:0;padding:0;background-color:#eef1f4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1a1e24;">
+  <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#eef1f4;">
+    {{commenter.displayName}} hat dein Video &bdquo;{{video.title}}&ldquo; kommentiert.
+  </div>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#eef1f4;padding:24px 12px;">
+    <tr><td align="center">
+      <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(20,30,40,0.06);">
+        <tr>
+          <td style="padding:28px 32px 20px 32px;border-bottom:1px solid #eef1f4;">
+            <a href="https://play.itsweber.de" style="text-decoration:none;color:inherit;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr>
+                <td style="vertical-align:middle;padding-right:10px;"><img src="https://play.itsweber.de/logo.png" width="32" height="32" alt="ITSWEBER Play" style="display:block;border:0;border-radius:6px;"></td>
+                <td style="vertical-align:middle;font-size:18px;font-weight:700;letter-spacing:-0.01em;color:#1a1e24;">ITSWEBER Play</td>
+              </tr></table>
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;font-size:15px;line-height:1.6;color:#1a1e24;">
+
+            <p style="margin:0 0 6px 0;font-size:13px;color:#6e7681;text-transform:uppercase;letter-spacing:0.04em;font-weight:600;">Neuer Kommentar</p>
+
+            <h1 style="margin:0 0 20px 0;font-size:20px;font-weight:700;letter-spacing:-0.01em;color:#1a1e24;">
+              {{commenter.displayName}} hat dein Video kommentiert
+            </h1>
+
+            <!-- Video-Preview-Card -->
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f4f6f8;border-radius:8px;margin:0 0 20px 0;">
+              <tr>
+                <td style="padding:14px;width:160px;vertical-align:top;">
+                  <a href="{{video.url}}" style="text-decoration:none;">
+                    <img src="{{video.thumbnailUrl}}" width="144" height="81" alt="{{video.title}}" style="display:block;border:0;border-radius:6px;background-color:#c8cdd3;">
+                  </a>
+                </td>
+                <td style="padding:14px 14px 14px 0;vertical-align:top;">
+                  <p style="margin:0 0 4px 0;font-weight:600;color:#1a1e24;">
+                    <a href="{{video.url}}" style="color:#1a1e24;text-decoration:none;">{{video.title}}</a>
+                  </p>
+                  <p style="margin:0;font-size:13px;color:#6e7681;">
+                    Auf deinem Kanal &bdquo;{{channel.displayName}}&ldquo;
+                  </p>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Kommentar-Zitat -->
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-left:3px solid #00c9bf;margin:0 0 24px 0;">
+              <tr>
+                <td style="padding:4px 0 4px 16px;">
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 8px 0;">
+                    <tr>
+                      <td style="padding-right:10px;vertical-align:middle;">
+                        <img src="{{commenter.avatarUrl}}" width="32" height="32" alt="{{commenter.displayName}}" style="display:block;border:0;border-radius:16px;background-color:#c8cdd3;">
+                      </td>
+                      <td style="vertical-align:middle;">
+                        <p style="margin:0;font-weight:600;font-size:14px;color:#1a1e24;">{{commenter.displayName}}</p>
+                        <p style="margin:0;font-size:12px;color:#8b949e;">{{comment.timeAgo}}</p>
+                      </td>
+                    </tr>
+                  </table>
+                  <p style="margin:0;font-size:15px;color:#1a1e24;">
+                    {{comment.bodyExcerpt}}
+                  </p>
+                </td>
+              </tr>
+            </table>
+
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 8px 0;">
+              <tr>
+                <td bgcolor="#00c9bf" style="border-radius:8px;padding:0 4px 0 0;">
+                  <a href="{{comment.url}}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:10px 22px;font-size:14px;font-weight:600;color:#0f1416;text-decoration:none;border-radius:8px;">
+                    Antworten
+                  </a>
+                </td>
+                <td style="padding-left:10px;">
+                  <a href="{{comment.url}}" style="display:inline-block;padding:10px 22px;font-size:14px;font-weight:600;color:#6e7681;text-decoration:none;border:1px solid #d0d7de;border-radius:8px;">
+                    Kommentar öffnen
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
+        <tr><td style="padding:0 32px;"><div style="height:1px;background-color:#eef1f4;"></div></td></tr>
+        <tr>
+          <td style="padding:20px 32px 28px 32px;font-size:12px;line-height:1.6;color:#8b949e;">
+            <p style="margin:0 0 8px 0;">Du erhältst diese E-Mail, weil du Benachrichtigungen zu neuen Kommentaren aktiviert hast.</p>
+            <p style="margin:0 0 8px 0;">
+              <a href="{{prefsUrl}}" style="color:#6e7681;text-decoration:underline;">Benachrichtigungen verwalten</a>
+              &nbsp;·&nbsp;
+              <a href="{{impressumUrl}}" style="color:#6e7681;text-decoration:underline;">Impressum</a>
+              &nbsp;·&nbsp;
+              <a href="{{datenschutzUrl}}" style="color:#6e7681;text-decoration:underline;">Datenschutz</a>
+            </p>
+            <p style="margin:12px 0 0 0;color:#a0a8b0;">ITSWEBER Play · {{currentYear}}</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

@@ -1,0 +1,225 @@
+# ─────────────────────────────────────────────────────────────
+#  ITSWEBER Play — Production Stack (Unraid)
+#  Hostnet via br1 macvlan (10.10.8.50-55)
+#
+#  Healthchecks + service_healthy-Ketten stellen sicher, dass
+#  play-api erst startet, wenn Postgres/Redis/MinIO wirklich
+#  ready sind. play-migrate läuft als One-Shot vor play-api und
+#  führt Prisma-Migrations aus. Worker depends nur auf Redis +
+#  Postgres + MinIO (nicht auf API).
+#
+#  Ressource-Limits sind Default-Annahmen für einen Unraid-Host
+#  mit 8-16 Cores / 32+ GB RAM — anpassbar via Override-File.
+#  Quelle der Wahrheit zum Netzwerk/IP-Schema: CLAUDE.md +
+#  docs/02-deployment-unraid.md.
+# ─────────────────────────────────────────────────────────────
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  play-web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?NEXT_PUBLIC_API_URL must be set}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?NEXT_PUBLIC_SITE_URL must be set}
+        NEXT_PUBLIC_S3_PUBLIC_URL: ${NEXT_PUBLIC_S3_PUBLIC_URL:?NEXT_PUBLIC_S3_PUBLIC_URL must be set}
+    image: itsweber-play/web:local
+    container_name: play-web
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      br1:
+        ipv4_address: 10.10.8.50
+    depends_on:
+      play-api:
+        condition: service_healthy
+    healthcheck:
+      # Next.js standalone hat keinen /api/health-Router per se; wir nutzen die
+      # Root-Seite. 200 (HTML) oder 3xx gilt als healthy.
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://127.0.0.1:3000/', r => process.exit(r.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))\""]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1G
+    logging: *default-logging
+
+  play-migrate:
+    # One-Shot: fährt Prisma-Migrations gegen die live-DB und endet.
+    # `restart: "no"` verhindert Endlosschleifen bei Migrationsfehlern.
+    # play-api wartet via service_completed_successfully — ohne erfolgreiche
+    # Migration bootet kein API-Container.
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    image: itsweber-play/api:local
+    container_name: play-migrate
+    restart: "no"
+    env_file: .env
+    networks:
+      - br1
+    depends_on:
+      play-postgres:
+        condition: service_healthy
+    working_dir: /app
+    command: >
+      sh -c "pnpm --filter @play/db exec prisma migrate deploy --schema prisma/schema.prisma"
+    logging: *default-logging
+
+  play-api:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    image: itsweber-play/api:local
+    container_name: play-api
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      br1:
+        ipv4_address: 10.10.8.51
+    depends_on:
+      play-migrate:
+        condition: service_completed_successfully
+      play-postgres:
+        condition: service_healthy
+      play-redis:
+        condition: service_healthy
+      play-minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://127.0.0.1:4000/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))\""]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+    logging: *default-logging
+
+  play-worker:
+    build:
+      context: .
+      dockerfile: docker/worker/Dockerfile
+    container_name: play-worker
+    restart: unless-stopped
+    # PID-1 Reaper, sonst bleiben FFmpeg-Child-Prozesse bei `docker rm` zurück.
+    init: true
+    env_file: .env
+    networks:
+      br1:
+        ipv4_address: 10.10.8.55
+    depends_on:
+      play-migrate:
+        condition: service_completed_successfully
+      play-postgres:
+        condition: service_healthy
+      play-redis:
+        condition: service_healthy
+      play-minio:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          # Transcode ist CPU-intensiv — höheres Limit als API/Web.
+          cpus: "4.0"
+          memory: 6G
+    logging: *default-logging
+
+  play-postgres:
+    image: postgres:16-alpine
+    container_name: play-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB must be set}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER must be set}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+    volumes:
+      - /mnt/user/appdata/itsweber-play/postgres:/var/lib/postgresql/data
+    networks:
+      br1:
+        ipv4_address: 10.10.8.52
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+    logging: *default-logging
+
+  play-redis:
+    image: redis:7-alpine
+    container_name: play-redis
+    restart: unless-stopped
+    # appendonly=yes aktiviert AOF-Persistenz (BullMQ-Jobs + Rate-Limit-Store
+    # überleben Restart).
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - /mnt/user/appdata/itsweber-play/redis:/data
+    networks:
+      br1:
+        ipv4_address: 10.10.8.53
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+    logging: *default-logging
+
+  play-minio:
+    # Pinnen auf konkretes Release — `latest` ist unter Prod verboten, weil
+    # ein Re-Deploy sonst eine inkompatible MinIO-Version ziehen kann.
+    image: minio/minio:RELEASE.2026-01-07T22-48-43Z
+    container_name: play-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?MINIO_ROOT_USER must be set}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD must be set}
+    volumes:
+      - /mnt/user/appdata/itsweber-play/minio:/data
+    networks:
+      br1:
+        ipv4_address: 10.10.8.54
+    healthcheck:
+      # `mc ready local` ist im MinIO-Image vorinstalliert und schlägt an, sobald
+      # der Service echte Requests annehmen kann (Disk + Quorum ok).
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    logging: *default-logging
+
+networks:
+  br1:
+    external: true
+    name: br1

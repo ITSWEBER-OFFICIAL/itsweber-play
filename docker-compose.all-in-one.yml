@@ -1,0 +1,36 @@
+# ─────────────────────────────────────────────────────────────
+#  ITSWEBER Play — All-in-One Compose
+#
+#  Ein einziger Container bündelt Postgres, Redis, MinIO, Nginx,
+#  Web, API, Worker hinter s6-overlay. Nur Port 3000 exposed,
+#  alle Daten unter /data.
+#
+#  Dev:  docker compose -f docker-compose.all-in-one.yml up -d --build
+#  Prod: siehe docs/41-all-in-one-unraid.md
+# ─────────────────────────────────────────────────────────────
+
+services:
+  play:
+    build:
+      context: .
+      dockerfile: docker/all-in-one/Dockerfile
+    image: itsweber-play:all-in-one
+    container_name: itsweber-play
+    restart: unless-stopped
+    env_file: .env.all-in-one
+    ports:
+      - "3000:3000"
+    volumes:
+      # Single Data-Volume (Postgres, Redis, MinIO, Logs, Models)
+      - play-data:/data
+    # init:true ist von s6-overlay selbst nicht nötig (ist PID 1), aber
+    # schadet nicht bei künftigen Sidecars.
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  play-data:
+    driver: local
