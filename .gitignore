@@ -1,0 +1,47 @@
+node_modules/
+.next/
+dist/
+out/
+build/
+coverage/
+.turbo/
+
+# env
+.env
+.env.*
+.env.unraid.bak
+!.env.example
+!.env.production.example
+
+# os
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/
+*.swp
+
+# logs
+*.log
+logs/
+
+# docker local volumes
+.volumes/
+
+# prisma generated
+packages/db/generated/
+
+# previews assets (mirrored externally)
+previews/assets/logo.png
+previews/assets/demo-thumbs/
+
+# build artefacts
+build-aio.log
+image-transfer.log
+*.tsbuildinfo
+
+# local editor / tooling scratch
+
+# local infra notes (host-specific, untracked)
+config/

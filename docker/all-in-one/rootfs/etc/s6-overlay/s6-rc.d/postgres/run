@@ -1,0 +1,8 @@
+#!/bin/bash
+# Postgres 16 im Foreground, Logs auf stdout (s6-Supervisor fängt sie ein).
+set -e
+exec s6-setuidgid postgres \
+  /usr/lib/postgresql/16/bin/postgres \
+    -D /data/postgres \
+    -c listen_addresses=127.0.0.1 \
+    -c logging_collector=off

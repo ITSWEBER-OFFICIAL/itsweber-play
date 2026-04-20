@@ -1,0 +1,29 @@
+{
+  "name": "ITSWEBER Brand",
+  "description": "Echte Brand-Identität nach itsweber.de: dunkles Navy mit kräftigem Atom-Grün als Akzent und Türkis-Brücke. Spiegelt den Header der Hauptseite und das CMS-Sidebar-Look-and-Feel. Empfohlen für die offizielle Plattform-Version.",
+  "overrides": {
+    "color.neutral.900": "#0A1A26",
+    "color.neutral.800": "#102838",
+    "color.neutral.700": "#1B3F50",
+    "color.neutral.600": "#27576B",
+    "color.neutral.500": "#3D7186",
+    "color.neutral.400": "#7AA9BA",
+    "color.neutral.300": "#A8C9D5",
+    "color.neutral.200": "#D2E3EA",
+    "color.neutral.100": "#F0F6F9",
+    "color.neutral.50":  "#FFFFFF",
+    "color.teal.500":    "#3FE48B",
+    "color.teal.400":    "#5DEDA0",
+    "color.teal.600":    "#2EBF6E",
+    "color.teal.700":    "#1F8A4F",
+    "color.teal.300":    "#7BF2B6",
+    "color.teal.200":    "#B3F8D2",
+    "color.teal.100":    "#DCFAE7",
+    "color.teal.50":     "#EEFCF3",
+    "color.green.500":   "#3FE48B",
+    "color.green.600":   "#2EBF6E",
+    "shadow.glow":       "0 0 18px rgba(63, 228, 139, 0.55)",
+    "shadow.card":       "0 8px 32px rgba(43, 184, 197, 0.12)"
+  },
+  "logoFilter": "glow"
+}

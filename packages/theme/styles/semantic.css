@@ -1,0 +1,36 @@
+/* Semantic tokens (Ebene 2) — reference primitives via var().
+   Consumed by UI code as Tailwind utilities: bg-background, text-foreground,
+   bg-brand, bg-surface, text-muted, bg-danger, bg-success, …
+   Admin overrides (Ebene 3) will later override the referenced primitive vars
+   in a <style id="theme-vars"> injected at SSR / mutated over WS. */
+@theme {
+  /* Surfaces */
+  --color-background: var(--color-neutral-900);
+  --color-surface: var(--color-neutral-800);
+  --color-surface-raised: var(--color-neutral-700);
+  --color-surface-hover: var(--color-neutral-600);
+  --color-border: color-mix(in srgb, var(--color-neutral-100) 10%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--color-neutral-100) 18%, transparent);
+
+  /* Foregrounds */
+  --color-foreground: var(--color-neutral-100);
+  --color-muted: var(--color-neutral-300);
+  --color-dim: var(--color-neutral-400);
+  --color-subtle: var(--color-neutral-300);
+
+  /* Brand + intents */
+  --color-brand: var(--color-teal-500);
+  --color-brand-hover: var(--color-teal-400);
+  --color-brand-dim: var(--color-teal-700);
+  --color-danger: var(--color-red-500);
+  --color-warning: var(--color-amber-500);
+  --color-success: var(--color-green-500);
+
+  /* Schatten + Glows */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.40);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.50);
+  --shadow-glow: 0 0 18px color-mix(in srgb, var(--color-teal-500) 55%, transparent);
+
+  /* Logo-Filter (später via Admin-Theme-Editor überschreibbar) */
+  --logo-filter: drop-shadow(0 0 14px color-mix(in srgb, var(--color-teal-500) 60%, transparent));
+}

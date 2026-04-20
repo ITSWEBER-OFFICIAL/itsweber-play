@@ -1,0 +1,9 @@
+#!/bin/bash
+# Next.js standalone-Server auf 127.0.0.1:3001 (Nginx auf 3000 davor).
+set -e
+cd /app/apps/web/.next/standalone
+export PORT=3001
+export HOSTNAME=127.0.0.1
+# Das standalone-Entry erwartet Static/Public-Assets relativ zu sich.
+# Der web-Dockerfile kopiert die in derselben Struktur — wir behalten das bei.
+exec node apps/web/server.js

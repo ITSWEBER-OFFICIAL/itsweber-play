@@ -1,0 +1,5 @@
+#!/bin/bash
+# BullMQ-Worker: Transcode + Import + Caption + Moderation + Scheduler.
+set -e
+cd /app/apps/worker
+exec pnpm start

@@ -1,0 +1,12 @@
+#!/bin/bash
+# Redis 7 mit AOF-Persistenz unter /data/redis, loopback-only.
+set -e
+exec s6-setuidgid redis \
+  /usr/bin/redis-server \
+    --bind 127.0.0.1 \
+    --port 6379 \
+    --dir /data/redis \
+    --appendonly yes \
+    --save "" \
+    --daemonize no \
+    --protected-mode no

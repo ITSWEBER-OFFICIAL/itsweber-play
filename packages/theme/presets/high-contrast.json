@@ -1,0 +1,15 @@
+{
+  "name": "High Contrast",
+  "description": "A11y-Preset. Maximaler Kontrast für Sehschwäche.",
+  "overrides": {
+    "color.neutral.900": "#000000",
+    "color.neutral.800": "#000000",
+    "color.neutral.700": "#1a1a1a",
+    "color.neutral.50":  "#ffffff",
+    "color.neutral.100": "#ffffff",
+    "color.teal.500":    "#00ffff",
+    "color.teal.600":    "#00e0e0",
+    "shadow.card":       "0 0 0 2px #ffffff"
+  },
+  "logoFilter": "none"
+}
