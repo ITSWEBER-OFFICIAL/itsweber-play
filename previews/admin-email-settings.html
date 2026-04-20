@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin · E-Mail — ITSWEBER Play</title>
+<link rel="stylesheet" href="assets/preview.css">
+<style>
+  /* Admin-Email-Layout: Sidebar + 3-Tab-Content */
+
+  .admin-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+    padding: 24px;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .admin-sidebar {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 16px 12px;
+    align-self: start;
+    position: sticky;
+    top: 80px;
+  }
+  .admin-sidebar .section {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--fg-dim);
+    padding: 12px 10px 6px;
+  }
+  .admin-sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    color: var(--fg-muted);
+  }
+  .admin-sidebar a:hover { background: var(--bg-surface-hover); color: var(--fg); }
+  .admin-sidebar a.active { background: color-mix(in srgb, var(--brand) 14%, transparent); color: var(--brand); }
+  .admin-sidebar a.active::before {
+    content: ''; width: 3px; align-self: stretch; margin-right: -3px;
+    background: var(--brand); border-radius: 2px;
+  }
+
+  /* Tab-Strip */
+  .tab-strip {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .tab-strip button {
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--fg-muted);
+    background: none;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .tab-strip button.active {
+    color: var(--fg);
+    border-bottom-color: var(--brand);
+  }
+  .tab-strip button .count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-dim);
+    background: var(--bg-surface-hover);
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+  }
+
+  /* Form-Grid */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-grid.full { grid-template-columns: 1fr; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--fg-muted);
+    margin-bottom: 6px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 14px;
+    background: var(--bg-surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    color: var(--fg);
+    font-family: inherit;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent);
+  }
+  .field .hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--fg-dim);
+  }
+  .field .mask-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--success);
+    background: color-mix(in srgb, var(--success) 14%, transparent);
+    padding: 2px 8px;
+    border-radius: var(--r-sm);
+    margin-left: 8px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 24px;
+  }
+  .card + .card { margin-top: 20px; }
+  .card h3 {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .card .desc {
+    margin: 0 0 20px 0;
+    font-size: 13px;
+    color: var(--fg-muted);
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .btn-primary {
+    background: var(--brand);
+    color: #0f1416;
+  }
+  .btn-secondary {
+    background: var(--bg-surface-raised);
+    border-color: var(--border-strong);
+    color: var(--fg);
+  }
+  .btn-danger {
+    background: color-mix(in srgb, var(--danger) 14%, transparent);
+    color: var(--danger);
+    border-color: color-mix(in srgb, var(--danger) 36%, transparent);
+  }
+
+  /* Test-Diagnostics-Panel */
+  .diag {
+    margin-top: 16px;
+    padding: 14px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.6;
+    background: #0f1316;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    color: var(--fg-muted);
+  }
+  .diag .ok { color: var(--success); }
+  .diag .warn { color: var(--amber-500); }
+  .diag .err { color: var(--danger); }
+
+  /* Template-Editor-Grid */
+  .tpl-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr 1fr;
+    gap: 16px;
+    min-height: 640px;
+  }
+  .tpl-list {
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: var(--bg-surface);
+    padding: 8px;
+  }
+  .tpl-list .tpl {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    border-radius: var(--r-sm);
+    cursor: pointer;
+  }
+  .tpl-list .tpl.active { background: color-mix(in srgb, var(--brand) 12%, transparent); }
+  .tpl-list .tpl:hover:not(.active) { background: var(--bg-surface-hover); }
+  .tpl-list .tpl .name { font-size: 13px; font-weight: 600; color: var(--fg); }
+  .tpl-list .tpl .key { font-family: var(--font-mono); font-size: 11px; color: var(--fg-dim); margin-top: 2px; }
+  .tpl-list .tpl.custom .name::after {
+    content: '·bearbeitet';
+    font-size: 10px;
+    color: var(--amber-500);
+    margin-left: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  .tpl-edit, .tpl-preview {
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: var(--bg-surface);
+    display: flex;
+    flex-direction: column;
+  }
+  .tpl-edit-head, .tpl-preview-head {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--fg-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .tpl-edit-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+  .tpl-edit-body textarea { flex: 1; min-height: 140px; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; }
+
+  .tpl-preview-body {
+    flex: 1;
+    padding: 16px;
+    background: #eef1f4;
+    overflow: auto;
+  }
+  .tpl-preview-body iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 560px;
+    border: 0;
+    background: #fff;
+    border-radius: var(--r-sm);
+  }
+
+  /* Placeholder-Chips */
+  .placeholders {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .placeholders code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    background: var(--bg-surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    color: var(--brand);
+    cursor: pointer;
+  }
+
+  /* Log-Table */
+  .log-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+  }
+  .log-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--bg-surface-raised);
+    color: var(--fg-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border);
+  }
+  .log-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .log-table .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: var(--r-full);
+  }
+  .log-table .status.sent { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); }
+  .log-table .status.queued { background: color-mix(in srgb, var(--brand) 18%, transparent); color: var(--brand); }
+  .log-table .status.failed { background: color-mix(in srgb, var(--danger) 18%, transparent); color: var(--danger); }
+  .log-table .status.bounced { background: color-mix(in srgb, var(--amber-500) 18%, transparent); color: var(--amber-500); }
+
+  .dev-banner {
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    background: color-mix(in srgb, var(--amber-500) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--amber-500) 36%, transparent);
+    border-radius: var(--r-md);
+    font-size: 13px;
+    color: var(--fg);
+  }
+  .dev-banner .mono { color: var(--amber-500); font-weight: 600; }
+
+  h2.page-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px 0;
+  }
+  .page-subtitle {
+    margin: 0 0 20px 0;
+    font-size: 13px;
+    color: var(--fg-muted);
+  }
+
+  /* Icons-Placeholder: echte SVGs kommen via <Icon /> in App */
+  .ico { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; opacity: 0.8; }
+</style>
+</head>
+<body>
+
+<nav class="mini-nav">
+  <div class="mini-brand">
+    <img src="https://itsweber.de/ITS.png" alt="ITSWEBER Play">
+    ITSWEBER Play <span style="font-family:var(--font-mono);font-size:10px;color:var(--brand);margin-left:6px;">ADMIN</span>
+  </div>
+</nav>
+
+<div class="admin-shell">
+
+  <aside class="admin-sidebar">
+    <div class="section">Übersicht</div>
+    <a href="#">Dashboard</a>
+    <a href="#">Nutzer</a>
+    <a href="#">Videos</a>
+    <a href="#">Moderation</a>
+    <div class="section">Erscheinungsbild</div>
+    <a href="#">Theme-Editor</a>
+    <a href="#">Seiten-Blöcke</a>
+    <a href="#">Seiten (Legal)</a>
+    <div class="section">System</div>
+    <a href="#" class="active">E-Mail</a>
+    <a href="#">Gesundheit</a>
+    <a href="#">Einstellungen</a>
+  </aside>
+
+  <main>
+    <h2 class="page-title">E-Mail-System</h2>
+    <p class="page-subtitle">SMTP-Versand, Templates und Zustell-Log. Alle Einstellungen nur für Admins änderbar.</p>
+
+    <div class="dev-banner">
+      <span class="mono">● DEV-FALLBACK AKTIV</span> &nbsp;—&nbsp; Keine SMTP-Settings konfiguriert. Ausgehende Mails werden in die Server-Logs geschrieben, nicht versendet. Konfiguriere unten den Transport.
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-strip">
+      <button class="active">SMTP <span class="count">1</span></button>
+      <button>Templates <span class="count">6</span></button>
+      <button>Log <span class="count">247</span></button>
+    </div>
+
+    <!-- TAB 1: SMTP -->
+    <div class="card">
+      <h3>Transport-Einstellungen</h3>
+      <p class="desc">Angaben deines Mail-Providers (Postmark, Brevo, Mailjet, eigener Server …). Das Passwort wird AES-GCM-verschlüsselt in der Datenbank abgelegt und niemals im Frontend oder API-Response wieder ausgegeben.</p>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="smtpHost">Host</label>
+          <input id="smtpHost" type="text" value="smtp.brevo.com" placeholder="smtp.example.com">
+          <div class="hint">Hostname ohne Protokoll.</div>
+        </div>
+        <div class="field">
+          <label for="smtpPort">Port</label>
+          <input id="smtpPort" type="number" value="587" placeholder="587">
+          <div class="hint">587 (STARTTLS) · 465 (TLS) · 25 (unverschlüsselt, nicht empfohlen).</div>
+        </div>
+        <div class="field">
+          <label for="smtpUser">Benutzername</label>
+          <input id="smtpUser" type="text" value="admin@itsweber.de">
+        </div>
+        <div class="field">
+          <label for="smtpPass">Passwort <span class="mask-badge">● gespeichert</span></label>
+          <input id="smtpPass" type="password" value="" placeholder="Nur ausfüllen zum Ändern">
+          <div class="hint">Leer lassen um das bestehende Passwort zu behalten.</div>
+        </div>
+        <div class="field">
+          <label for="smtpSecure">Verbindung</label>
+          <select id="smtpSecure">
+            <option>STARTTLS (empfohlen für Port 587)</option>
+            <option>TLS (Port 465)</option>
+            <option>Keine (nur für interne Dev-Smtp)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fromName">Absender-Name</label>
+          <input id="fromName" type="text" value="ITSWEBER Play">
+        </div>
+        <div class="field">
+          <label for="fromEmail">Absender-Adresse</label>
+          <input id="fromEmail" type="email" value="noreply@play.itsweber.de">
+        </div>
+        <div class="field">
+          <label for="replyTo">Reply-To (optional)</label>
+          <input id="replyTo" type="email" value="support@itsweber.de">
+        </div>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:10px;">
+        <button class="btn btn-primary">Einstellungen speichern</button>
+        <button class="btn btn-secondary">Verwerfen</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Test-Mail senden</h3>
+      <p class="desc">Sendet eine Diagnostik-Mail an die angegebene Adresse &mdash; direkt über den konfigurierten Transport, ohne Queue. Antwort enthält TLS-Status, gemessenen Durchsatz und DKIM/SPF/DMARC-Hinweise.</p>
+      <div class="form-grid">
+        <div class="field">
+          <label for="testTo">Ziel-Adresse</label>
+          <input id="testTo" type="email" value="admin@itsweber.de">
+        </div>
+        <div style="display:flex;align-items:flex-end;">
+          <button class="btn btn-primary">Test-Mail jetzt senden</button>
+        </div>
+      </div>
+
+      <div class="diag">
+        <div>[14:23:07] <span class="ok">✓</span> DNS-Auflösung smtp.brevo.com → 188.166.112.117 (42 ms)</div>
+        <div>[14:23:07] <span class="ok">✓</span> TCP-Connect Port 587 (61 ms)</div>
+        <div>[14:23:07] <span class="ok">✓</span> STARTTLS ausgehandelt (TLSv1.3, ECDHE-ECDSA-CHACHA20-POLY1305)</div>
+        <div>[14:23:07] <span class="ok">✓</span> AUTH LOGIN erfolgreich</div>
+        <div>[14:23:08] <span class="ok">✓</span> MAIL FROM akzeptiert (noreply@play.itsweber.de)</div>
+        <div>[14:23:08] <span class="ok">✓</span> RCPT TO akzeptiert (admin@itsweber.de)</div>
+        <div>[14:23:08] <span class="ok">✓</span> Nachricht zugestellt (ID: 20260417142308.a4b2@brevo)</div>
+        <div>[14:23:08] <span class="warn">!</span> DKIM-Signatur fehlt — trage im Brevo-Panel den DNS-TXT-Record ein (siehe Doku).</div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Templates (vorgezogen als weiterer Block, im echten UI Tab-Switch) -->
+    <div class="card" style="margin-top:32px;">
+      <h3>Templates <span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-dim);margin-left:8px;">Tab 2</span></h3>
+      <p class="desc">Jede System-Mail ist ein editierbares Template. Platzhalter in doppelten Klammern werden beim Senden durch echte Werte ersetzt. Klicke ein Template, um HTML und Plain-Text zu bearbeiten.</p>
+
+      <div class="tpl-layout">
+
+        <div class="tpl-list">
+          <div class="tpl active">
+            <div class="name">Passwort zurücksetzen</div>
+            <div class="key">reset</div>
+          </div>
+          <div class="tpl">
+            <div class="name">E-Mail bestätigen</div>
+            <div class="key">verify</div>
+          </div>
+          <div class="tpl custom">
+            <div class="name">Willkommen</div>
+            <div class="key">welcome</div>
+          </div>
+          <div class="tpl">
+            <div class="name">Neuer Kommentar</div>
+            <div class="key">new_comment</div>
+          </div>
+          <div class="tpl">
+            <div class="name">Neuer Abonnent</div>
+            <div class="key">new_subscriber</div>
+          </div>
+          <div class="tpl">
+            <div class="name">Neue Meldung (Admin)</div>
+            <div class="key">report_received</div>
+          </div>
+        </div>
+
+        <div class="tpl-edit">
+          <div class="tpl-edit-head">
+            <span>Editor · reset</span>
+            <span><button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;">Auf Default zurücksetzen</button></span>
+          </div>
+          <div class="tpl-edit-body">
+            <div class="field">
+              <label>Betreff</label>
+              <input type="text" value="Neues Passwort für dein ITSWEBER-Play-Konto setzen">
+            </div>
+            <div class="field">
+              <label>HTML-Body</label>
+              <textarea>&lt;h1&gt;Neues Passwort setzen&lt;/h1&gt;
+&lt;p&gt;Hallo {{user.displayName}},&lt;/p&gt;
+&lt;p&gt;jemand hat angefordert, dein Passwort zurückzusetzen. Klicke unten, um ein neues zu vergeben:&lt;/p&gt;
+&lt;a class="btn" href="{{actionUrl}}"&gt;Passwort zurücksetzen&lt;/a&gt;
+&lt;p style="font-size:13px;color:#6e7681;"&gt;Dieser Link ist 1 Stunde gültig.&lt;/p&gt;</textarea>
+            </div>
+            <div class="field">
+              <label>Plain-Text-Body</label>
+              <textarea rows="4">Hallo {{user.displayName}},
+
+jemand hat angefordert, dein Passwort zurückzusetzen. Öffne diesen Link um ein neues zu vergeben (1 Stunde gültig):
+
+{{actionUrl}}</textarea>
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;color:var(--fg-muted);margin-bottom:6px;">Verfügbare Platzhalter (Klick zum Einfügen):</label>
+              <div class="placeholders">
+                <code>{{user.displayName}}</code>
+                <code>{{user.email}}</code>
+                <code>{{actionUrl}}</code>
+                <code>{{request.ip}}</code>
+                <code>{{request.timestamp}}</code>
+                <code>{{request.userAgent}}</code>
+                <code>{{supportEmail}}</code>
+                <code>{{siteUrl}}</code>
+                <code>{{logoUrl}}</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tpl-preview">
+          <div class="tpl-preview-head">
+            <span>Live-Vorschau</span>
+            <span><button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;">Testmail senden…</button></span>
+          </div>
+          <div class="tpl-preview-body">
+            <iframe src="email-reset.html" title="Preview"></iframe>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: Log -->
+    <div class="card" style="margin-top:32px;">
+      <h3>Versand-Log <span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-dim);margin-left:8px;">Tab 3</span></h3>
+      <p class="desc">Letzte 100 Sends. Klick auf Zeile für Detail-Modal mit Trace.</p>
+
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <select style="padding:7px 10px;font-size:13px;background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--fg);">
+          <option>Alle Status</option>
+          <option>Erfolgreich</option>
+          <option>In Queue</option>
+          <option>Fehlgeschlagen</option>
+          <option>Bounced</option>
+        </select>
+        <select style="padding:7px 10px;font-size:13px;background:var(--bg-surface-raised);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--fg);">
+          <option>Alle Templates</option>
+          <option>verify</option>
+          <option>reset</option>
+          <option>welcome</option>
+          <option>new_comment</option>
+        </select>
+      </div>
+
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>Zeit</th>
+            <th>An</th>
+            <th>Template</th>
+            <th>Status</th>
+            <th>Provider-ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono" style="color:var(--fg-muted);">14:23:08</td>
+            <td>admin@itsweber.de</td>
+            <td class="mono">test</td>
+            <td><span class="status sent">● sent</span></td>
+            <td class="mono" style="color:var(--fg-dim);font-size:12px;">20260417.142308.a4b2</td>
+          </tr>
+          <tr>
+            <td class="mono" style="color:var(--fg-muted);">14:19:47</td>
+            <td>creator1@test.de</td>
+            <td class="mono">new_comment</td>
+            <td><span class="status sent">● sent</span></td>
+            <td class="mono" style="color:var(--fg-dim);font-size:12px;">20260417.141947.8e1f</td>
+          </tr>
+          <tr>
+            <td class="mono" style="color:var(--fg-muted);">14:18:12</td>
+            <td>invalid-mail@broken.test</td>
+            <td class="mono">welcome</td>
+            <td><span class="status bounced">● bounced</span></td>
+            <td class="mono" style="color:var(--fg-dim);font-size:12px;">550 No such user</td>
+          </tr>
+          <tr>
+            <td class="mono" style="color:var(--fg-muted);">14:15:33</td>
+            <td>neuer@example.org</td>
+            <td class="mono">verify</td>
+            <td><span class="status sent">● sent</span></td>
+            <td class="mono" style="color:var(--fg-dim);font-size:12px;">20260417.141533.c2b7</td>
+          </tr>
+          <tr>
+            <td class="mono" style="color:var(--fg-muted);">14:11:02</td>
+            <td>admin@itsweber.de</td>
+            <td class="mono">report_received</td>
+            <td><span class="status queued">● queued</span></td>
+            <td class="mono" style="color:var(--fg-dim);font-size:12px;">—</td>
+          </tr>
+          <tr>
+            <td class="mono" style="color:var(--fg-muted);">14:08:44</td>
+            <td>foo@spam-blocked.net</td>
+            <td class="mono">verify</td>
+            <td><span class="status failed">● failed</span></td>
+            <td class="mono" style="color:var(--fg-dim);font-size:12px;">RBL reject</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

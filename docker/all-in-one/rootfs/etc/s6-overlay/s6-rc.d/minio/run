@@ -1,0 +1,12 @@
+#!/bin/bash
+# MinIO auf 127.0.0.1:9000 + Console auf 9001 (intern, nicht exposed).
+# Console lauscht bewusst auch nur auf loopback — wer MinIO-Admin braucht,
+# tunnelt per `docker exec` oder SSH-Forward.
+set -e
+export MINIO_ROOT_USER=${MINIO_ROOT_USER:?MINIO_ROOT_USER fehlt}
+export MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD fehlt}
+export MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL:-}
+exec /usr/local/bin/minio server \
+    --address 127.0.0.1:9000 \
+    --console-address 127.0.0.1:9001 \
+    /data/minio

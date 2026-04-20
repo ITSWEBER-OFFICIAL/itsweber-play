@@ -1,0 +1,14 @@
+{
+  "name": "ITSWEBER Light",
+  "description": "Helles Gegenstück. Für User, die bei Tag schauen.",
+  "overrides": {
+    "color.neutral.900": "#ffffff",
+    "color.neutral.800": "#f6f8fa",
+    "color.neutral.700": "#e6edf3",
+    "color.neutral.100": "#0e1116",
+    "color.neutral.50":  "#161b22",
+    "color.teal.500":    "#2d8a8a",
+    "color.teal.600":    "#236e6e"
+  },
+  "logoFilter": "softGlow"
+}

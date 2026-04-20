@@ -1,0 +1,24 @@
+{
+  "name": "Retro",
+  "description": "Fun-Preset. 80s-Synthwave-Vibes mit Magenta + Cyan auf tiefem Violett.",
+  "overrides": {
+    "color.neutral.900": "#14062e",
+    "color.neutral.800": "#1f0a42",
+    "color.neutral.700": "#2a1157",
+    "color.neutral.600": "#3a1a75",
+    "color.neutral.100": "#fef3ff",
+    "color.neutral.50":  "#fff0fb",
+    "color.neutral.300": "#ff9eea",
+    "color.neutral.400": "#c77dd1",
+    "color.teal.500":    "#ff2fd1",
+    "color.teal.600":    "#d21fb1",
+    "color.teal.400":    "#4ae0ff",
+    "color.teal.700":    "#9c16a0",
+    "radius.sm":         "2px",
+    "radius.md":         "3px",
+    "radius.lg":         "4px",
+    "shadow.card":       "0 0 0 1px #ff2fd1, 0 0 24px rgba(255,47,209,.35)",
+    "shadow.glow":       "0 0 22px #ff2fd1"
+  },
+  "logoFilter": "duotone"
+}

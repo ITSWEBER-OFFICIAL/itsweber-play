@@ -1,0 +1,35 @@
+{
+  "name": "@play/theme",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Design-Token-Source-of-Truth (primitives + semantic layer) für ITSWEBER Play.",
+  "type": "module",
+  "files": [
+    "src",
+    "dist",
+    "styles",
+    "tokens.json"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./presets": {
+      "types": "./src/presets.ts",
+      "default": "./src/presets.ts"
+    },
+    "./tokens.json": "./tokens.json",
+    "./primitives.css": "./dist/primitives.css",
+    "./semantic.css": "./styles/semantic.css"
+  },
+  "scripts": {
+    "build": "node scripts/build-primitives-css.mjs",
+    "postinstall": "node scripts/build-primitives-css.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,7 @@
+#!/bin/bash
+# Nginx als Port-Multiplexer auf :3000 (siehe /etc/nginx/conf.d/play.conf).
+# Nginx startet früh, der /health-Endpoint antwortet sofort 200. Die
+# upstream-Services (web:3001, api:4000, minio:9000) brauchen je ein paar
+# Sekunden — Nginx retried automatisch.
+set -e
+exec /usr/sbin/nginx -g 'daemon off;'
