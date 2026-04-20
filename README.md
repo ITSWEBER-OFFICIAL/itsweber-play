@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo/exports/social-banner-1280.png" alt="ITSWEBER Play" width="720" />
+</p>
+
 # ITSWEBER Play
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
@@ -52,7 +56,7 @@ Web-UI: <http://localhost:3000> · API: <http://localhost:4000> · MinIO: <http:
 
 ## Architektur
 
-```
+```text
 NPM (Reverse Proxy)
    │
    ▼  play.itsweber.net → :3000
