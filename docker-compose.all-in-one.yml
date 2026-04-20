@@ -6,7 +6,7 @@
 #  alle Daten unter /data.
 #
 #  Dev:  docker compose -f docker-compose.all-in-one.yml up -d --build
-#  Prod: siehe docs/41-all-in-one-unraid.md
+#  Prod: siehe docs/02-deployment-unraid.md
 # ─────────────────────────────────────────────────────────────
 
 services:
