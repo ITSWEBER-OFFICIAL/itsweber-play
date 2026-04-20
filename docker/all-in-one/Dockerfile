@@ -39,7 +39,7 @@ RUN curl -fL "https://github.com/ggerganov/whisper.cpp/archive/refs/tags/v${WHIS
     && cmake --build build --target whisper-cli -j"$(nproc)"
 
 # ── Node build stage (Monorepo + Next.js standalone) ─────────────────
-FROM node:22-slim AS node-build
+FROM node:25-slim AS node-build
 RUN corepack enable
 WORKDIR /app
 
