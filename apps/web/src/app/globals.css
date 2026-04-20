@@ -1,0 +1,62 @@
+@import "tailwindcss";
+@import "../../node_modules/@play/theme/dist/primitives.css";
+@import "../../node_modules/@play/theme/styles/semantic.css";
+
+/* Body-Hintergrund: zwei Radial-Gradients mit Teal-Tint für Tiefe.
+   Muss hier (nicht via @theme) stehen, weil Tailwind v4 keinen Multi-Layer-
+   Background-Utility hat. */
+body {
+  background:
+    radial-gradient(
+      1200px 600px at 15% -10%,
+      color-mix(in srgb, var(--color-brand) 12%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 90% 10%,
+      color-mix(in srgb, var(--color-brand) 7%, transparent),
+      transparent 55%
+    ),
+    var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-geist), system-ui, sans-serif;
+  font-feature-settings: normal;
+}
+
+code, kbd, samp, .mono {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-feature-settings: "zero";
+}
+
+/* Headings dürfen etwas enger: matched den preview-Look */
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
+
+/* Scroll-Chip-Row: Scrollbar ausblenden, horizontales Snap-Scroll */
+.chips-scroll {
+  scrollbar-width: none;
+}
+.chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Prose-Styles für StaticPage (Impressum / Datenschutz / AGB).
+   Kein @tailwindcss/typography — eigene schlanke Variante mit Design Tokens. */
+.prose-legal h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -0.02em; }
+.prose-legal h2 { font-size: 1.25rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.5rem; }
+.prose-legal h3 { font-size: 1.05rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.4rem; }
+.prose-legal p  { line-height: 1.75; margin-bottom: 1rem; color: var(--color-foreground); }
+.prose-legal ul, .prose-legal ol { margin-bottom: 1rem; padding-left: 1.5rem; }
+.prose-legal li { line-height: 1.7; margin-bottom: 0.25rem; }
+.prose-legal a  { color: var(--color-brand); text-decoration: underline; }
+.prose-legal a:hover { opacity: 0.8; }
+.prose-legal em { opacity: 0.6; font-size: 0.875rem; }
+
+/* Shorts-Feed: scrollbar verstecken (Firefox + WebKit) */
+.shorts-feed {
+  scrollbar-width: none;
+}
+.shorts-feed::-webkit-scrollbar {
+  display: none;
+}

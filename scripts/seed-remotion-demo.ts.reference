@@ -1,0 +1,149 @@
+// Upload + Enqueue der 4 Remotion-Demo-Videos.
+// Läuft aus apps/api (hat @play/db, @play/storage, bullmq-Dependencies).
+//
+// Flow pro Video:
+//   1. MP4 aus apps/remotion/out/<Name>.mp4 lesen
+//   2. PutObject in MinIO play-raw (Key = <uuid>.mp4)
+//   3. Video-Row in DB anlegen (Admin-Owner, Admin-Channel, status=PROCESSING)
+//   4. Transcode-Job enqueuen → Worker macht HLS
+
+import { readFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+import { prisma } from "@play/db";
+import { putObject, config } from "@play/storage";
+import { transcodeQueue } from "@play/worker/queue";
+
+interface DemoSpec {
+  fileName: string;
+  slug: string;
+  title: string;
+  description: string;
+  format: "LONG" | "SHORT";
+  tags: string[];
+}
+
+const SPECS: DemoSpec[] = [
+  {
+    fileName: "WelcomeLong.mp4",
+    slug: "remotion-welcome",
+    title: "Willkommen bei ITSWEBER Play",
+    description:
+      "Ein 90-Sekunden-Intro zur Plattform — powered by ITSWEBER.\n\n© Benjamin Weber · ITSWEBER",
+    format: "LONG",
+    tags: ["intro", "itsweber-play", "tutorial"],
+  },
+  {
+    fileName: "StudioTourLong.mp4",
+    slug: "remotion-studio-tour",
+    title: "Studio-Tour in 60 Sekunden",
+    description:
+      "Upload, Trim, Publish — der komplette Creator-Flow in einer Minute.\n\n© Benjamin Weber · ITSWEBER",
+    format: "LONG",
+    tags: ["studio", "creator", "tutorial"],
+  },
+  {
+    fileName: "ShortsFeatureShort.mp4",
+    slug: "remotion-shorts-feature",
+    title: "ITSWEBER Play Shorts",
+    description: "Vertikale Videos, Snap-Feed, Multi-Reactions.",
+    format: "SHORT",
+    tags: ["shorts", "feature"],
+  },
+  {
+    fileName: "AccessibilityShort.mp4",
+    slug: "remotion-accessibility",
+    title: "Barrierefrei designed",
+    description:
+      "WCAG 2.2 AA, Skip-Links, @Mentions, Reduced-Motion — weil Zugang zählt.",
+    format: "SHORT",
+    tags: ["a11y", "accessibility"],
+  },
+];
+
+const ROOT = path.resolve(__dirname, "..", "..");
+const REMOTION_OUT = path.join(ROOT, "apps", "remotion", "out");
+
+async function main() {
+  const admin = await prisma.user.findUnique({
+    where: { email: "info@itsweber.de" },
+  });
+  if (!admin) throw new Error("Admin-User (info@itsweber.de) nicht gefunden");
+
+  const channel = await prisma.channel.findFirst({
+    where: { ownerId: admin.id },
+    orderBy: { createdAt: "asc" },
+  });
+  if (!channel) throw new Error("Admin-Channel nicht gefunden");
+
+  console.log(`[seed] Admin: ${admin.email} / Channel: ${channel.slug}`);
+
+  for (const spec of SPECS) {
+    const existing = await prisma.video.findUnique({
+      where: { slug: spec.slug },
+      select: { id: true, status: true },
+    });
+    if (existing && existing.status === "LIVE") {
+      console.log(`[seed] ${spec.slug} ist bereits LIVE — skip.`);
+      continue;
+    }
+
+    const filePath = path.join(REMOTION_OUT, spec.fileName);
+    const buffer = await readFile(filePath);
+    const videoId = existing?.id ?? randomUUID();
+    const rawKey = `${videoId}.mp4`;
+
+    console.log(
+      `[seed] Upload ${spec.fileName} → ${config.buckets.raw}/${rawKey} (${(buffer.length / 1024 / 1024).toFixed(1)} MB)`,
+    );
+    await putObject(config.buckets.raw, rawKey, buffer, {
+      "content-type": "video/mp4",
+    });
+
+    if (!existing) {
+      await prisma.video.create({
+        data: {
+          id: videoId,
+          slug: spec.slug,
+          ownerId: admin.id,
+          channelId: channel.id,
+          title: spec.title,
+          description: spec.description,
+          tags: spec.tags,
+          visibility: "PUBLIC",
+          status: "PROCESSING",
+          format: spec.format,
+          source: "UPLOAD",
+        },
+      });
+    } else {
+      await prisma.video.update({
+        where: { id: existing.id },
+        data: { status: "PROCESSING", failureReason: null },
+      });
+    }
+
+    await transcodeQueue.add("transcode", {
+      videoId,
+      rawKey,
+      sourceType: "UPLOAD",
+      formatHint: spec.format,
+    });
+
+    console.log(`[seed] ✓ Enqueued transcode für ${spec.slug} (id=${videoId})`);
+  }
+
+  await transcodeQueue.close();
+  await prisma.$disconnect();
+  console.log("[seed] Alle 4 Remotion-Videos enqueued. Worker macht jetzt HLS.");
+  process.exit(0);
+}
+
+main().catch((e) => {
+  console.error("[seed] ERROR:", e);
+  process.exit(1);
+});

@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ITSWEBER Play — Logo-Konzepte</title>
+<style>
+  :root {
+    --navy-900: #0A1A26;
+    --navy-800: #102838;
+    --navy-700: #1B3F50;
+    --teal-500: #3FE48B;
+    --teal-400: #5DEDA0;
+    --teal-600: #2EBF6E;
+    --neutral-100: #F0F6F9;
+    --neutral-300: #A8C9D5;
+    --neutral-500: #3D7186;
+    --fg: var(--neutral-100);
+    --fg-dim: var(--neutral-300);
+    --fg-muted: #7AA9BA;
+    --border: rgba(168, 201, 213, 0.12);
+    --glow: 0 0 18px rgba(63, 228, 139, 0.55);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy-900); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif; }
+  body { background: radial-gradient(ellipse at top, #0F2535 0%, var(--navy-900) 70%); min-height: 100vh; padding: 64px 32px 96px; }
+
+  .wrap { max-width: 1280px; margin: 0 auto; }
+  header.hero { margin-bottom: 56px; }
+  .eyebrow { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal-500); margin-bottom: 12px; }
+  h1 { font-size: 42px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 12px; }
+  h1 em { font-style: normal; background: linear-gradient(90deg, var(--teal-400), var(--teal-500)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { color: var(--fg-dim); font-size: 16px; max-width: 720px; line-height: 1.55; }
+
+  .concept { margin-top: 64px; }
+  .concept-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .concept-num { font-family: ui-monospace, monospace; font-size: 12px; color: var(--teal-500); letter-spacing: 0.25em; }
+  .concept-title { font-size: 28px; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+  .concept-desc { color: var(--fg-dim); font-size: 14px; flex: 1; min-width: 280px; line-height: 1.5; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+
+  .tile { background: var(--navy-800); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .tile-label { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--fg-muted); border-bottom: 1px solid var(--border); }
+  .tile-label .dim { color: var(--fg-muted); opacity: 0.6; }
+  .canvas { display: grid; place-items: center; padding: 32px; min-height: 220px; }
+  .canvas.dark { background: var(--navy-900); }
+  .canvas.light { background: var(--neutral-100); }
+  .canvas.checker {
+    background-color: #1a3040;
+    background-image:
+      linear-gradient(45deg, #122a3a 25%, transparent 25%),
+      linear-gradient(-45deg, #122a3a 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #122a3a 75%),
+      linear-gradient(-45deg, transparent 75%, #122a3a 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, 8px 0;
+  }
+  .canvas.banner { padding: 0; min-height: 240px; background: linear-gradient(135deg, #0A1A26 0%, #102838 55%, #1B3F50 100%); position: relative; overflow: hidden; }
+  .canvas.banner::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 12% 50%, rgba(63, 228, 139, 0.18), transparent 38%);
+    pointer-events: none;
+  }
+
+  .size { width: 128px; height: 128px; }
+  .size-small { width: 64px; height: 64px; }
+  .wordmark { height: 72px; }
+
+  .swatches { display: flex; gap: 6px; margin-top: 28px; }
+  .sw { width: 48px; height: 48px; border-radius: 10px; display: grid; place-items: end; color: rgba(255,255,255,0.55); font-size: 9px; font-family: ui-monospace, monospace; padding: 4px 6px; border: 1px solid var(--border); }
+
+  .ratings { margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap; font-size: 11px; color: var(--fg-dim); }
+  .chip { background: rgba(63, 228, 139, 0.08); color: var(--teal-500); border: 1px solid rgba(63, 228, 139, 0.25); padding: 4px 10px; border-radius: 999px; font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .chip.neutral { background: rgba(168, 201, 213, 0.04); color: var(--fg-muted); border-color: var(--border); }
+
+  .caption { font-size: 12px; color: var(--fg-muted); margin-top: 16px; line-height: 1.55; }
+  code { font-family: ui-monospace, monospace; color: var(--teal-400); background: rgba(63, 228, 139, 0.06); padding: 1px 6px; border-radius: 4px; }
+
+  footer.meta { margin-top: 96px; padding-top: 32px; border-top: 1px solid var(--border); color: var(--fg-muted); font-size: 12px; text-align: center; font-family: ui-monospace, monospace; letter-spacing: 0.1em; }
+
+  /* Banner-Interior */
+  .banner-layout { display: flex; align-items: center; height: 100%; padding: 40px 56px; gap: 36px; position: relative; z-index: 1; }
+  .banner-name { font-size: 38px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; margin: 0; }
+  .banner-tag { color: var(--fg-dim); font-size: 14px; margin-top: 6px; letter-spacing: 0.02em; }
+  .banner-by { margin-top: 14px; font-family: ui-monospace, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.25em; color: var(--teal-500); }
+
+  /* Wortmarke-Container */
+  .wm-row { display: flex; align-items: center; gap: 14px; }
+  .wm-text { display: flex; flex-direction: column; line-height: 1; }
+  .wm-main { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; color: var(--fg); }
+  .wm-main em { font-style: normal; color: var(--teal-500); }
+  .wm-sub { font-family: ui-monospace, monospace; font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--fg-muted); margin-top: 6px; }
+
+  /* Hover state / selection */
+  .vote { display: inline-flex; gap: 10px; align-items: center; margin-top: 28px; }
+  .vote-btn { background: transparent; border: 1px solid var(--border); color: var(--fg-muted); padding: 6px 14px; border-radius: 999px; font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; cursor: default; }
+
+  .arrow { color: var(--teal-500); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Logo Concept Review · v0.4</div>
+  <h1>ITSWEBER Play — <em>drei Mark-Studies</em></h1>
+  <p class="sub">
+    Jedes Konzept kombiniert die ITSWEBER-Atom-DNA (5 Nodes, Navy + Atom-Grün aus itsweber.de)
+    mit einer Play-Geste. Alles Vektor, alles auf transparentem Hintergrund lieferbar.
+    Sag mir welches du willst — ich exportiere es zu 512/192 PNG + originaler SVG + Favicon-Set.
+  </p>
+  <div class="swatches" title="Brand Palette">
+    <div class="sw" style="background:#0A1A26">0A1A26</div>
+    <div class="sw" style="background:#102838">102838</div>
+    <div class="sw" style="background:#1B3F50">1B3F50</div>
+    <div class="sw" style="background:#3FE48B; color:#0A1A26">3FE48B</div>
+    <div class="sw" style="background:#5DEDA0; color:#0A1A26">5DEDA0</div>
+    <div class="sw" style="background:#F0F6F9; color:#0A1A26">F0F6F9</div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- KONZEPT 1 — ATOM-PLAY-CORE                                             -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section class="concept" id="c1">
+  <div class="concept-head">
+    <span class="concept-num">01</span>
+    <h2 class="concept-title">Atom Play Core</h2>
+    <p class="concept-desc">
+      Evolution deines jetzigen Atom-Marks. Drei Elektronen-Orbits bleiben, der Kern wird zum Play-Dreieck.
+      Minimale Neuerung, maximale Kontinuität zur Corporate-Identity. <span class="chip">sicher</span>
+    </p>
+  </div>
+
+  <div class="grid">
+    <!-- Square app icon, large -->
+    <div class="tile">
+      <div class="tile-label"><span>Icon · App-Size</span><span class="dim">512 × 512 · PNG + SVG</span></div>
+      <div class="canvas dark">
+        <svg width="128" height="128" viewBox="0 0 128 128" aria-label="Atom Play Core">
+          <defs>
+            <linearGradient id="g1-play" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#5DEDA0"/>
+              <stop offset="100%" stop-color="#3FE48B"/>
+            </linearGradient>
+            <filter id="g1-glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="4" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <g transform="translate(64 64)" fill="none" stroke="#3FE48B" stroke-width="2" opacity="0.85">
+            <ellipse rx="44" ry="18" transform="rotate(0)"/>
+            <ellipse rx="44" ry="18" transform="rotate(60)"/>
+            <ellipse rx="44" ry="18" transform="rotate(120)"/>
+          </g>
+          <!-- 5 nodes representing ITSWEBER mindmap signature -->
+          <g fill="#3FE48B">
+            <circle cx="108" cy="64" r="3.5"/>
+            <circle cx="42" cy="25" r="3.5"/>
+            <circle cx="42" cy="103" r="3.5"/>
+            <circle cx="86" cy="25" r="3.5"/>
+            <circle cx="86" cy="103" r="3.5"/>
+          </g>
+          <!-- Play core -->
+          <g filter="url(#g1-glow)">
+            <circle cx="64" cy="64" r="20" fill="url(#g1-play)"/>
+          </g>
+          <path d="M58 52 L58 76 L80 64 Z" fill="#0A1A26"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Wordmark horizontal -->
+    <div class="tile">
+      <div class="tile-label"><span>Wortmarke</span><span class="dim">800 × 200 · Horizontal</span></div>
+      <div class="canvas dark">
+        <div class="wm-row">
+          <svg width="56" height="56" viewBox="0 0 128 128" aria-label="Mark">
+            <g transform="translate(64 64)" fill="none" stroke="#3FE48B" stroke-width="2" opacity="0.85">
+              <ellipse rx="44" ry="18" transform="rotate(0)"/>
+              <ellipse rx="44" ry="18" transform="rotate(60)"/>
+              <ellipse rx="44" ry="18" transform="rotate(120)"/>
+            </g>
+            <g fill="#3FE48B">
+              <circle cx="108" cy="64" r="3.5"/>
+              <circle cx="42" cy="25" r="3.5"/>
+              <circle cx="42" cy="103" r="3.5"/>
+              <circle cx="86" cy="25" r="3.5"/>
+              <circle cx="86" cy="103" r="3.5"/>
+            </g>
+            <circle cx="64" cy="64" r="20" fill="#3FE48B"/>
+            <path d="M58 52 L58 76 L80 64 Z" fill="#0A1A26"/>
+          </svg>
+          <div class="wm-text">
+            <div class="wm-main">ITSWEBER <em>Play</em></div>
+            <div class="wm-sub">Powered by ITSWEBER</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mono dark (reverse) -->
+    <div class="tile">
+      <div class="tile-label"><span>Mono · hell auf dunkel</span><span class="dim">64 × 64 · Docker-Icon</span></div>
+      <div class="canvas dark">
+        <svg width="96" height="96" viewBox="0 0 128 128" aria-label="Mono">
+          <g transform="translate(64 64)" fill="none" stroke="#F0F6F9" stroke-width="2.5">
+            <ellipse rx="44" ry="18" transform="rotate(0)"/>
+            <ellipse rx="44" ry="18" transform="rotate(60)"/>
+            <ellipse rx="44" ry="18" transform="rotate(120)"/>
+          </g>
+          <g fill="#F0F6F9">
+            <circle cx="108" cy="64" r="3.5"/>
+            <circle cx="42" cy="25" r="3.5"/>
+            <circle cx="42" cy="103" r="3.5"/>
+            <circle cx="86" cy="25" r="3.5"/>
+            <circle cx="86" cy="103" r="3.5"/>
+            <circle cx="64" cy="64" r="20"/>
+          </g>
+          <path d="M58 52 L58 76 L80 64 Z" fill="#0A1A26"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Light background variant -->
+    <div class="tile">
+      <div class="tile-label"><span>Licht-Variante</span><span class="dim">Print + Hell</span></div>
+      <div class="canvas light">
+        <svg width="96" height="96" viewBox="0 0 128 128" aria-label="Light">
+          <g transform="translate(64 64)" fill="none" stroke="#0A1A26" stroke-width="2.5">
+            <ellipse rx="44" ry="18" transform="rotate(0)"/>
+            <ellipse rx="44" ry="18" transform="rotate(60)"/>
+            <ellipse rx="44" ry="18" transform="rotate(120)"/>
+          </g>
+          <g fill="#0A1A26">
+            <circle cx="108" cy="64" r="3.5"/>
+            <circle cx="42" cy="25" r="3.5"/>
+            <circle cx="42" cy="103" r="3.5"/>
+            <circle cx="86" cy="25" r="3.5"/>
+            <circle cx="86" cy="103" r="3.5"/>
+          </g>
+          <circle cx="64" cy="64" r="20" fill="#2EBF6E"/>
+          <path d="M58 52 L58 76 L80 64 Z" fill="#F0F6F9"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social Banner 1280 × 320 -->
+  <div class="tile" style="margin-top: 16px;">
+    <div class="tile-label"><span>Social Banner</span><span class="dim">1280 × 320 · GitHub / OG / Ads</span></div>
+    <div class="canvas banner">
+      <div class="banner-layout">
+        <svg width="160" height="160" viewBox="0 0 128 128" style="flex-shrink:0;">
+          <defs>
+            <filter id="g1b-glow"><feGaussianBlur stdDeviation="5"/></filter>
+          </defs>
+          <g transform="translate(64 64)" fill="none" stroke="#3FE48B" stroke-width="2" opacity="0.85">
+            <ellipse rx="44" ry="18" transform="rotate(0)"/>
+            <ellipse rx="44" ry="18" transform="rotate(60)"/>
+            <ellipse rx="44" ry="18" transform="rotate(120)"/>
+          </g>
+          <g fill="#3FE48B">
+            <circle cx="108" cy="64" r="3.5"/>
+            <circle cx="42" cy="25" r="3.5"/>
+            <circle cx="42" cy="103" r="3.5"/>
+            <circle cx="86" cy="25" r="3.5"/>
+            <circle cx="86" cy="103" r="3.5"/>
+          </g>
+          <circle cx="64" cy="64" r="24" fill="#3FE48B" filter="url(#g1b-glow)" opacity="0.35"/>
+          <circle cx="64" cy="64" r="20" fill="#3FE48B"/>
+          <path d="M58 52 L58 76 L80 64 Z" fill="#0A1A26"/>
+        </svg>
+        <div>
+          <h3 class="banner-name">ITSWEBER <span style="color: #3FE48B">Play</span></h3>
+          <p class="banner-tag">Die Video-Plattform mit Atom-DNA. Self-hosted. Open Source. 100 % dir.</p>
+          <div class="banner-by">Powered by ITSWEBER · itsweber.de</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ratings">
+    <span class="chip">Erkennbarkeit hoch</span>
+    <span class="chip neutral">Entwicklungsrisiko niedrig</span>
+    <span class="chip neutral">5-Node-Referenz klar</span>
+  </div>
+  <div class="caption">
+    Das „play im atom"-Pattern macht deinen Mark sofort verständlich. Die 5 Nodes außen referenzieren
+    deine ITSWEBER-Mindmap, der leuchtende Play-Kern markiert das Sub-Produkt.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- KONZEPT 2 — ORBIT BURST                                                -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section class="concept" id="c2">
+  <div class="concept-head">
+    <span class="concept-num">02</span>
+    <h2 class="concept-title">Orbit Burst</h2>
+    <p class="concept-desc">
+      Fünf Nodes formen einen Pentagon-Orbit — direkte Mindmap-Referenz. Das Play-Dreieck „shootet"
+      asymmetrisch aus der Mitte nach rechts, als würde Inhalt in Bewegung treten. <span class="chip">markant</span>
+    </p>
+  </div>
+
+  <div class="grid">
+    <div class="tile">
+      <div class="tile-label"><span>Icon · App-Size</span><span class="dim">512 × 512</span></div>
+      <div class="canvas dark">
+        <svg width="128" height="128" viewBox="0 0 128 128" aria-label="Orbit Burst">
+          <defs>
+            <linearGradient id="g2-play" x1="0" y1="0" x2="1" y2="0.5">
+              <stop offset="0%" stop-color="#5DEDA0"/>
+              <stop offset="100%" stop-color="#2EBF6E"/>
+            </linearGradient>
+            <filter id="g2-glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3.5" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Pentagon orbit — 5 nodes (mindmap) -->
+          <g stroke="#3FE48B" stroke-width="1.5" fill="none" opacity="0.5">
+            <polygon points="64,18 107,48 91,102 37,102 21,48"/>
+          </g>
+          <g fill="#3FE48B">
+            <circle cx="64" cy="18" r="4.5"/>
+            <circle cx="107" cy="48" r="4.5"/>
+            <circle cx="91" cy="102" r="4.5"/>
+            <circle cx="37" cy="102" r="4.5"/>
+            <circle cx="21" cy="48" r="4.5"/>
+          </g>
+          <!-- Play triangle, centered -->
+          <g filter="url(#g2-glow)">
+            <path d="M46 42 L46 86 L86 64 Z" fill="url(#g2-play)"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="tile">
+      <div class="tile-label"><span>Wortmarke</span><span class="dim">800 × 200</span></div>
+      <div class="canvas dark">
+        <div class="wm-row">
+          <svg width="56" height="56" viewBox="0 0 128 128" aria-label="Mark">
+            <g stroke="#3FE48B" stroke-width="1.5" fill="none" opacity="0.5">
+              <polygon points="64,18 107,48 91,102 37,102 21,48"/>
+            </g>
+            <g fill="#3FE48B">
+              <circle cx="64" cy="18" r="4.5"/>
+              <circle cx="107" cy="48" r="4.5"/>
+              <circle cx="91" cy="102" r="4.5"/>
+              <circle cx="37" cy="102" r="4.5"/>
+              <circle cx="21" cy="48" r="4.5"/>
+            </g>
+            <path d="M46 42 L46 86 L86 64 Z" fill="#3FE48B"/>
+          </svg>
+          <div class="wm-text">
+            <div class="wm-main">ITSWEBER <em>Play</em></div>
+            <div class="wm-sub">Powered by ITSWEBER</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tile">
+      <div class="tile-label"><span>Mono</span><span class="dim">Docker · Favicon</span></div>
+      <div class="canvas dark">
+        <svg width="96" height="96" viewBox="0 0 128 128" aria-label="Mono">
+          <g stroke="#F0F6F9" stroke-width="1.5" fill="none" opacity="0.5">
+            <polygon points="64,18 107,48 91,102 37,102 21,48"/>
+          </g>
+          <g fill="#F0F6F9">
+            <circle cx="64" cy="18" r="4.5"/>
+            <circle cx="107" cy="48" r="4.5"/>
+            <circle cx="91" cy="102" r="4.5"/>
+            <circle cx="37" cy="102" r="4.5"/>
+            <circle cx="21" cy="48" r="4.5"/>
+          </g>
+          <path d="M46 42 L46 86 L86 64 Z" fill="#F0F6F9"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="tile">
+      <div class="tile-label"><span>Licht-Variante</span><span class="dim">Print + Hell</span></div>
+      <div class="canvas light">
+        <svg width="96" height="96" viewBox="0 0 128 128" aria-label="Light">
+          <g stroke="#0A1A26" stroke-width="1.8" fill="none" opacity="0.7">
+            <polygon points="64,18 107,48 91,102 37,102 21,48"/>
+          </g>
+          <g fill="#0A1A26">
+            <circle cx="64" cy="18" r="4.5"/>
+            <circle cx="107" cy="48" r="4.5"/>
+            <circle cx="91" cy="102" r="4.5"/>
+            <circle cx="37" cy="102" r="4.5"/>
+            <circle cx="21" cy="48" r="4.5"/>
+          </g>
+          <path d="M46 42 L46 86 L86 64 Z" fill="#2EBF6E"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="tile" style="margin-top: 16px;">
+    <div class="tile-label"><span>Social Banner</span><span class="dim">1280 × 320</span></div>
+    <div class="canvas banner">
+      <div class="banner-layout">
+        <svg width="160" height="160" viewBox="0 0 128 128" style="flex-shrink:0;">
+          <defs><filter id="g2b-glow"><feGaussianBlur stdDeviation="5"/></filter></defs>
+          <g stroke="#3FE48B" stroke-width="1.5" fill="none" opacity="0.6">
+            <polygon points="64,18 107,48 91,102 37,102 21,48"/>
+          </g>
+          <g fill="#3FE48B">
+            <circle cx="64" cy="18" r="4.5"/>
+            <circle cx="107" cy="48" r="4.5"/>
+            <circle cx="91" cy="102" r="4.5"/>
+            <circle cx="37" cy="102" r="4.5"/>
+            <circle cx="21" cy="48" r="4.5"/>
+          </g>
+          <path d="M46 42 L46 86 L86 64 Z" fill="#3FE48B" filter="url(#g2b-glow)" opacity="0.35"/>
+          <path d="M46 42 L46 86 L86 64 Z" fill="#3FE48B"/>
+        </svg>
+        <div>
+          <h3 class="banner-name">ITSWEBER <span style="color: #3FE48B">Play</span></h3>
+          <p class="banner-tag">Fünf Knoten, ein Play. Selbstgebaute Video-Plattform mit voller Theming-Kontrolle.</p>
+          <div class="banner-by">Powered by ITSWEBER · itsweber.de</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ratings">
+    <span class="chip">Mindmap-DNA explizit</span>
+    <span class="chip">Play = Action-Symbol</span>
+    <span class="chip neutral">Eigenständig vom Atom</span>
+  </div>
+  <div class="caption">
+    Direkter als Konzept 1: Pentagon = Mindmap, kein Rest-Atom. Das Play ist groß und dominant —
+    erkennt man auch als Favicon. Break mit dem bisherigen Look, aber bewusst weiterentwickelt.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- KONZEPT 3 — SIGNAL WAVE                                                -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section class="concept" id="c3">
+  <div class="concept-head">
+    <span class="concept-num">03</span>
+    <h2 class="concept-title">Signal Wave</h2>
+    <p class="concept-desc">
+      Drei steigende Audio-/Bitrate-Bars verschmelzen mit einem Play-Tonnage. Kommuniziert direkt:
+      „Video-Streaming". Unten im Fuß: ein Mini-Atom als ITSWEBER-Signatur. <span class="chip">story-driven</span>
+    </p>
+  </div>
+
+  <div class="grid">
+    <div class="tile">
+      <div class="tile-label"><span>Icon · App-Size</span><span class="dim">512 × 512</span></div>
+      <div class="canvas dark">
+        <svg width="128" height="128" viewBox="0 0 128 128" aria-label="Signal Wave">
+          <defs>
+            <linearGradient id="g3-bars" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#2EBF6E"/>
+              <stop offset="100%" stop-color="#5DEDA0"/>
+            </linearGradient>
+            <filter id="g3-glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3"/>
+            </filter>
+          </defs>
+          <!-- 3 ascending bars (signal / equalizer) -->
+          <g fill="url(#g3-bars)">
+            <rect x="20" y="68" width="14" height="30" rx="3"/>
+            <rect x="38" y="54" width="14" height="44" rx="3"/>
+            <rect x="56" y="38" width="14" height="60" rx="3"/>
+          </g>
+          <!-- Play triangle merging -->
+          <g filter="url(#g3-glow)" opacity="0.4">
+            <path d="M76 34 L76 98 L112 66 Z" fill="#3FE48B"/>
+          </g>
+          <path d="M76 34 L76 98 L112 66 Z" fill="#3FE48B"/>
+          <!-- ITSWEBER atom signature dots at base -->
+          <g fill="#3FE48B" opacity="0.55">
+            <circle cx="14" cy="114" r="2"/>
+            <circle cx="28" cy="114" r="2"/>
+            <circle cx="42" cy="114" r="2"/>
+            <circle cx="56" cy="114" r="2"/>
+            <circle cx="70" cy="114" r="2"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="tile">
+      <div class="tile-label"><span>Wortmarke</span><span class="dim">800 × 200</span></div>
+      <div class="canvas dark">
+        <div class="wm-row">
+          <svg width="56" height="56" viewBox="0 0 128 128" aria-label="Mark">
+            <g fill="#3FE48B">
+              <rect x="20" y="68" width="14" height="30" rx="3"/>
+              <rect x="38" y="54" width="14" height="44" rx="3"/>
+              <rect x="56" y="38" width="14" height="60" rx="3"/>
+            </g>
+            <path d="M76 34 L76 98 L112 66 Z" fill="#3FE48B"/>
+            <g fill="#3FE48B" opacity="0.55">
+              <circle cx="14" cy="114" r="2"/>
+              <circle cx="28" cy="114" r="2"/>
+              <circle cx="42" cy="114" r="2"/>
+              <circle cx="56" cy="114" r="2"/>
+              <circle cx="70" cy="114" r="2"/>
+            </g>
+          </svg>
+          <div class="wm-text">
+            <div class="wm-main">ITSWEBER <em>Play</em></div>
+            <div class="wm-sub">Powered by ITSWEBER</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tile">
+      <div class="tile-label"><span>Mono</span><span class="dim">Favicon</span></div>
+      <div class="canvas dark">
+        <svg width="96" height="96" viewBox="0 0 128 128" aria-label="Mono">
+          <g fill="#F0F6F9">
+            <rect x="20" y="68" width="14" height="30" rx="3"/>
+            <rect x="38" y="54" width="14" height="44" rx="3"/>
+            <rect x="56" y="38" width="14" height="60" rx="3"/>
+          </g>
+          <path d="M76 34 L76 98 L112 66 Z" fill="#F0F6F9"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="tile">
+      <div class="tile-label"><span>Licht-Variante</span><span class="dim">Print + Hell</span></div>
+      <div class="canvas light">
+        <svg width="96" height="96" viewBox="0 0 128 128" aria-label="Light">
+          <g fill="#2EBF6E">
+            <rect x="20" y="68" width="14" height="30" rx="3"/>
+            <rect x="38" y="54" width="14" height="44" rx="3"/>
+            <rect x="56" y="38" width="14" height="60" rx="3"/>
+          </g>
+          <path d="M76 34 L76 98 L112 66 Z" fill="#0A1A26"/>
+          <g fill="#2EBF6E" opacity="0.6">
+            <circle cx="14" cy="114" r="2"/>
+            <circle cx="28" cy="114" r="2"/>
+            <circle cx="42" cy="114" r="2"/>
+            <circle cx="56" cy="114" r="2"/>
+            <circle cx="70" cy="114" r="2"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="tile" style="margin-top: 16px;">
+    <div class="tile-label"><span>Social Banner</span><span class="dim">1280 × 320</span></div>
+    <div class="canvas banner">
+      <div class="banner-layout">
+        <svg width="160" height="160" viewBox="0 0 128 128" style="flex-shrink:0;">
+          <defs><filter id="g3b-glow"><feGaussianBlur stdDeviation="5"/></filter></defs>
+          <g fill="#3FE48B">
+            <rect x="20" y="68" width="14" height="30" rx="3"/>
+            <rect x="38" y="54" width="14" height="44" rx="3"/>
+            <rect x="56" y="38" width="14" height="60" rx="3"/>
+          </g>
+          <path d="M76 34 L76 98 L112 66 Z" fill="#3FE48B" filter="url(#g3b-glow)" opacity="0.4"/>
+          <path d="M76 34 L76 98 L112 66 Z" fill="#3FE48B"/>
+          <g fill="#3FE48B" opacity="0.55">
+            <circle cx="14" cy="114" r="2"/>
+            <circle cx="28" cy="114" r="2"/>
+            <circle cx="42" cy="114" r="2"/>
+            <circle cx="56" cy="114" r="2"/>
+            <circle cx="70" cy="114" r="2"/>
+          </g>
+        </svg>
+        <div>
+          <h3 class="banner-name">ITSWEBER <span style="color: #3FE48B">Play</span></h3>
+          <p class="banner-tag">Signal statt Rauschen. Eigenes Video-Hosting ohne Tracker, ohne Algorithmus-Lotterie.</p>
+          <div class="banner-by">Powered by ITSWEBER · itsweber.de</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ratings">
+    <span class="chip">Video-Thematik explizit</span>
+    <span class="chip neutral">Modern + dynamisch</span>
+    <span class="chip neutral">5-Dot-Signature im Fuß</span>
+  </div>
+  <div class="caption">
+    Thematisch näher am Produkt (Streaming) als am Unternehmen. Die 5 Punkte unten bleiben als
+    dezente Signatur — wie ein Wasserzeichen. Bar-Chart-Motiv funktioniert auch gut animiert
+    (Intro-Bumper für Videos).
+  </div>
+</section>
+
+<footer class="meta">
+  © 2026 Benjamin Weber · ITSWEBER &nbsp;·&nbsp; <code>previews/logo-concepts.html</code><br>
+  Alles Vektor. Liefere mir die Nummer — ich exportiere 512/192/64 PNG, SVG-Original, Favicon-Set.
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+{
+  "name": "@play/db",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Prisma-Schema + PrismaClient-Singleton für ITSWEBER Play.",
+  "type": "module",
+  "files": [
+    "src",
+    "prisma"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "prisma generate --schema prisma/schema.prisma",
+    "generate": "prisma generate --schema prisma/schema.prisma",
+    "migrate:dev": "dotenv -e ../../.env -- prisma migrate dev --schema prisma/schema.prisma",
+    "migrate:deploy": "dotenv -e ../../.env -- prisma migrate deploy --schema prisma/schema.prisma",
+    "studio": "dotenv -e ../../.env -- prisma studio --schema prisma/schema.prisma",
+    "seed": "dotenv -e ../../.env -- prisma db seed",
+    "validate": "dotenv -e ../../.env -- prisma validate --schema prisma/schema.prisma",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "prisma generate --schema prisma/schema.prisma"
+  },
+  "prisma": {
+    "seed": "tsx src/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "dotenv-cli": "^8.0.0",
+    "prisma": "^6.1.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

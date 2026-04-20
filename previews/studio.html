@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Play Studio — ITSWEBER Play</title>
+<link rel="stylesheet" href="assets/preview.css">
+</head>
+<body>
+
+<!-- ── Navigation ─────────────────────────────────────────── -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="brand-mark" href="home.html">
+      <img class="brand-logo" src="https://itsweber.de/uploads/media/logos/media_d5e82b218f8b98cd.png" alt="">
+      <span class="brand-name">ITSWEBER Play<sup>STUDIO</sup></span>
+    </a>
+    <div class="nav-links">
+      <a href="home.html">Plattform</a>
+      <a class="active" href="studio.html">Studio</a>
+      <a href="admin.html">Admin</a>
+    </div>
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="search" placeholder="Meine Videos durchsuchen …">
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l4 4h-3v6h-2V6H8l4-4zm7 15v3H5v-3H3v3c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-3h-2z"/></svg>
+        Upload
+      </button>
+      <div class="avatar">i</div>
+    </div>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <!-- ── Sidebar ──────────────────────────────────────────── -->
+  <aside class="side">
+    <div class="side-ctx">@itsweber · Creator</div>
+
+    <nav class="side-group">
+      <a class="active" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        Meine Videos
+        <span class="pill">24</span>
+      </a>
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload / Import
+      </a>
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analytics
+      </a>
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        Kommentare
+        <span class="pill">3</span>
+      </a>
+    </nav>
+
+    <div class="side-group-title">Kanal</div>
+    <nav class="side-group">
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        Kanal-Profil
+      </a>
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Branding
+      </a>
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        Abonnenten
+      </a>
+    </nav>
+
+    <div class="side-group-title">Account</div>
+    <nav class="side-group">
+      <a href="#">Einstellungen</a>
+      <a href="#">Abmelden</a>
+    </nav>
+  </aside>
+
+  <!-- ── Main ─────────────────────────────────────────────── -->
+  <main class="main">
+    <div class="sp-between rise">
+      <div>
+        <h1 class="page-title">Play Studio</h1>
+        <p class="page-sub">Deine Videos, Analytics und Kanal-Tools auf einen Blick.</p>
+      </div>
+      <div class="row">
+        <button class="btn btn-ghost">Import via URL</button>
+        <button class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Neues Video
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats rise">
+      <div class="stat">
+        <div class="stat-label">Videos</div>
+        <div class="stat-value">24</div>
+        <div class="stat-delta up">+2 diese Woche</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Views (30 T)</div>
+        <div class="stat-value">48.2k</div>
+        <div class="stat-delta up">+12.4%</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Watch-Time</div>
+        <div class="stat-value">312h</div>
+        <div class="stat-delta up">+5.8%</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Abonnenten</div>
+        <div class="stat-value">1.284</div>
+        <div class="stat-delta up">+41</div>
+      </div>
+    </div>
+
+    <!-- Meine Videos Tabelle -->
+    <div class="sp-between rise" style="margin-bottom:14px">
+      <h2 class="section-title" style="font-size:18px">Meine Videos <span class="tag">LIVE · 21</span></h2>
+      <div class="row">
+        <select class="mono-sm" style="background:var(--bg-surface);border:1px solid var(--border);color:var(--fg);padding:7px 12px;border-radius:var(--r-md);font-size:12px">
+          <option>Alle</option>
+          <option>Live</option>
+          <option>In Verarbeitung</option>
+          <option>Entwurf</option>
+          <option>Privat</option>
+        </select>
+        <button class="btn btn-ghost">Filter</button>
+      </div>
+    </div>
+
+    <div class="table-wrap rise">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40%">Video</th>
+            <th>Status</th>
+            <th>Sichtbarkeit</th>
+            <th>Views</th>
+            <th>Likes</th>
+            <th>Dauer</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:color-mix(in srgb, var(--brand) 6%, transparent)">
+            <td>
+              <div class="row-title">
+                <img class="v-thumb-sm" src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=200&q=70" alt="">
+                <div>
+                  <div class="row-title-text">Smart Home Blackout — wenn dein Server die Lichter ausknipst</div>
+                  <div class="row-title-sub">Bearbeitet · 2026-04-14 · @itsweber</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-live-dot">Live</span></td>
+            <td><span class="badge badge-public">Public</span></td>
+            <td class="mono">1.248</td>
+            <td class="mono">87</td>
+            <td class="mono">18:42</td>
+            <td><button class="btn btn-ghost" style="height:32px;padding:0 10px;font-size:12px">Öffnen</button></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="row-title">
+                <img class="v-thumb-sm" src="https://images.unsplash.com/photo-1591808216268-ce0b82787efe?auto=format&fit=crop&w=200&q=70" alt="">
+                <div>
+                  <div class="row-title-text">Warum ich PeerTube nach 14 Monaten verlasse</div>
+                  <div class="row-title-sub">Draft · noch nicht veröffentlicht</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-draft">Entwurf</span></td>
+            <td><span class="badge badge-draft">Privat</span></td>
+            <td class="mono">—</td>
+            <td class="mono">—</td>
+            <td class="mono">8:14</td>
+            <td><button class="btn btn-ghost" style="height:32px;padding:0 10px;font-size:12px">Editor</button></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="row-title">
+                <img class="v-thumb-sm" src="https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=200&q=70" alt="">
+                <div>
+                  <div class="row-title-text">Frigate + CompreFace: Wer klingelt an meiner Tür?</div>
+                  <div class="row-title-sub">2026-04-15 · @itsweber</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-processing">Transcoding 62%</span></td>
+            <td><span class="badge badge-draft">Geplant</span></td>
+            <td class="mono">—</td>
+            <td class="mono">—</td>
+            <td class="mono">12:08</td>
+            <td><button class="btn btn-ghost" style="height:32px;padding:0 10px;font-size:12px">Details</button></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="row-title">
+                <img class="v-thumb-sm" src="https://images.unsplash.com/photo-1581091012184-5c5c7a1b66c8?auto=format&fit=crop&w=200&q=70" alt="">
+                <div>
+                  <div class="row-title-text">Unraid 7.2 Setup — von leerem Array bis 24 TB</div>
+                  <div class="row-title-sub">2026-04-13 · @itsweber · yt-dlp Import</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-live-dot">Live</span></td>
+            <td><span class="badge badge-public">Public</span></td>
+            <td class="mono">18.211</td>
+            <td class="mono">942</td>
+            <td class="mono">41:02</td>
+            <td><button class="btn btn-ghost" style="height:32px;padding:0 10px;font-size:12px">Öffnen</button></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="row-title">
+                <img class="v-thumb-sm" src="https://images.unsplash.com/photo-1526374870839-e155464bb9b2?auto=format&fit=crop&w=200&q=70" alt="">
+                <div>
+                  <div class="row-title-text">WireGuard für Dummies — 10 Minuten Setup, 10 Jahre Ruhe</div>
+                  <div class="row-title-sub">2026-04-09 · @itsweber</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-live-dot">Live</span></td>
+            <td><span class="badge badge-public">Public</span></td>
+            <td class="mono">3.117</td>
+            <td class="mono">221</td>
+            <td class="mono">15:27</td>
+            <td><button class="btn btn-ghost" style="height:32px;padding:0 10px;font-size:12px">Öffnen</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Editor (in-line) -->
+    <section class="editor rise" aria-label="Video Editor">
+      <div>
+        <h3>Editor — „Warum ich PeerTube nach 14 Monaten verlasse"</h3>
+
+        <div class="scrubber" aria-label="Timeline">
+          <div class="scrubber-range" title="Trim-Bereich"></div>
+          <div class="scrubber-head"></div>
+        </div>
+        <div class="row" style="justify-content:space-between;margin-top:10px;color:var(--fg-muted);font-size:12px">
+          <span class="mono">00:00:00</span>
+          <span class="mono">Trim: 00:01:12 – 00:07:02</span>
+          <span class="mono">00:08:14</span>
+        </div>
+
+        <h3 style="margin-top:24px">Thumbnail wählen</h3>
+        <div class="thumbs-picker">
+          <div class="thumb-pick"><img src="https://images.unsplash.com/photo-1591808216268-ce0b82787efe?auto=format&fit=crop&w=400&q=70" alt=""></div>
+          <div class="thumb-pick active"><img src="https://images.unsplash.com/photo-1581276879432-15e50529f34b?auto=format&fit=crop&w=400&q=70" alt=""></div>
+          <div class="thumb-pick"><img src="https://images.unsplash.com/photo-1593108408993-58ee9c7825c2?auto=format&fit=crop&w=400&q=70" alt=""></div>
+        </div>
+
+        <h3 style="margin-top:24px">Kapitel</h3>
+        <div style="display:grid;gap:6px">
+          <div class="row mono-sm" style="color:var(--fg-muted)"><span class="mono" style="color:var(--brand)">00:00</span><span>Intro – warum überhaupt der Wechsel</span></div>
+          <div class="row mono-sm" style="color:var(--fg-muted)"><span class="mono" style="color:var(--brand)">01:20</span><span>Die drei Schmerzpunkte mit PeerTube</span></div>
+          <div class="row mono-sm" style="color:var(--fg-muted)"><span class="mono" style="color:var(--brand)">04:45</span><span>Was ich jetzt baue</span></div>
+          <div class="row mono-sm" style="color:var(--fg-muted)"><span class="mono" style="color:var(--brand)">07:02</span><span>Outro</span></div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Metadaten</h3>
+
+        <div class="field">
+          <label>Titel</label>
+          <input type="text" value="Warum ich PeerTube nach 14 Monaten verlasse">
+        </div>
+
+        <div class="field">
+          <label>Beschreibung</label>
+          <textarea rows="4">14 Monate PeerTube. Was gut lief, was nicht und warum ich jetzt Greenfield baue …</textarea>
+        </div>
+
+        <div class="field">
+          <label>Tags</label>
+          <input type="text" value="peertube, selfhosted, video, itsweber-play, unraid">
+        </div>
+
+        <div class="field">
+          <label>Sichtbarkeit</label>
+          <div class="radio-row">
+            <div class="radio-pill">Public</div>
+            <div class="radio-pill">Unlisted</div>
+            <div class="radio-pill on">Login</div>
+            <div class="radio-pill">Privat</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Kommentare erlauben</label>
+          <div class="radio-row">
+            <div class="radio-pill on">Ja</div>
+            <div class="radio-pill">Nein</div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:20px;gap:8px">
+          <button class="btn btn-ghost grow">Als Entwurf speichern</button>
+          <button class="btn btn-primary grow">Veröffentlichen</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  document.querySelectorAll(".radio-pill").forEach(p => {
+    p.addEventListener("click", () => {
+      const row = p.parentElement;
+      row.querySelectorAll(".radio-pill").forEach(x => x.classList.remove("on"));
+      p.classList.add("on");
+    });
+  });
+  document.querySelectorAll(".thumb-pick").forEach(t => {
+    t.addEventListener("click", () => {
+      document.querySelectorAll(".thumb-pick").forEach(x => x.classList.remove("active"));
+      t.classList.add("active");
+    });
+  });
+</script>
+</body>
+</html>
