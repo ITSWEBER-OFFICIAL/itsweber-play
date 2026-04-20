@@ -8,7 +8,7 @@
 # - Startet Container neu mit Env aus $APPDATA/.env
 # - Healthcheck + /setup HTTP-Test
 #
-# Erwartet auf Unraid: /mnt/user/appdata/itsweber-play-data/.env
+# Erwartet auf Unraid: /mnt/user/appdata/itsweber-play-data/.env.production
 # Ausführen via:  ssh unraid 'bash -s' < scripts/unraid-clean-install.sh
 #
 set -euo pipefail
@@ -17,7 +17,7 @@ CONTAINER=itsweber-play
 IMAGE=ghcr.io/itsweber-official/itsweber-play:latest
 APPDATA=/mnt/user/appdata/itsweber-play-data
 DATA_DIR="$APPDATA/data"
-ENV_FILE="$APPDATA/.env"
+ENV_FILE="$APPDATA/.env.production"
 NETWORK=br1
 IP=10.10.8.51
 TS=$(date +%Y%m%d-%H%M%S)
