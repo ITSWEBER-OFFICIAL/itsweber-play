@@ -9,6 +9,7 @@ coverage/
 # env
 .env
 .env.*
+.env.unraid.bak
 !.env.example
 !.env.production.example
 
