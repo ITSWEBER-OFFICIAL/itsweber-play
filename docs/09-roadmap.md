@@ -84,9 +84,10 @@ auf GitHub + im Unraid Community Store.
 
 ### Release-Pipeline
 
-- [ ] Git-Setup (LICENSE, README, CONTRIBUTING, Secret-Scan)
-- [ ] GitHub-Public-Push + Actions-CI + Release-Tag
-- [ ] Unraid Community Store Template-PR
+- [x] Git-Setup (LICENSE, README, CONTRIBUTING, Secret-Scan, History-Scrub)
+- [x] GitHub-Public-Push + Actions-CI (GHCR `main` + `latest`)
+- [ ] Release-Tag `v0.4.0-beta` pushen (`git tag -a v0.4.0-beta && git push --tags`)
+- [x] Unraid Community Store Template-PR (Squidly271/AppFeed #23, wartet auf Merge)
 - [ ] Download-Bereich + Demo-Video
 - [ ] Dokumentation (Install/Handbuch/Wiki/FAQ)
 

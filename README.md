@@ -42,7 +42,7 @@ docker run -d \
 Beim ersten Aufruf `http://<host>:3000` startet automatisch der Setup-Wizard
 unter `/setup` — Admin anlegen, Branding + SMTP + Legal konfigurieren, fertig.
 
-Details zu Unraid-Deploy: [docs/02-deployment-unraid.md](docs/02-deployment-unraid.md) · [docs/41-all-in-one-unraid.md](docs/41-all-in-one-unraid.md)
+Details zu Unraid-Deploy: [docs/02-deployment-unraid.md](docs/02-deployment-unraid.md)
 
 ## Quickstart (Dev)
 
