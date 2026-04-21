@@ -47,6 +47,8 @@ interface FeaturedVideo {
   durationSec: number | null;
   viewCount: number;
   publishedAt: string | Date | null;
+  format: "LONG" | "SHORT";
+  channel: { slug: string; displayName: string };
 }
 
 interface TrailerVideo {
