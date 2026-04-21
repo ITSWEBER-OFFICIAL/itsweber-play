@@ -139,7 +139,7 @@ export const channelRouter = router({
               viewCount: true,
               publishedAt: true,
               format: true,
-              channel: { select: { slug: true, displayName: true } },
+              channel: { select: { slug: true, displayName: true, avatarUrl: true } },
             },
           },
           trailerVideo: {
@@ -183,7 +183,7 @@ export const channelRouter = router({
           status: true,
           visibility: true,
           format: true,
-          channel: { select: { slug: true, displayName: true } },
+          channel: { select: { slug: true, displayName: true, avatarUrl: true } },
         },
       });
 

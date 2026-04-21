@@ -375,7 +375,7 @@ export const videoRouter = router({
           createdAt: true,
           publishedAt: true,
           scheduledPublishAt: true,
-          channel: { select: { slug: true, displayName: true } },
+          channel: { select: { slug: true, displayName: true, avatarUrl: true } },
         },
       });
       if (!video) throw new TRPCError({ code: "NOT_FOUND" });

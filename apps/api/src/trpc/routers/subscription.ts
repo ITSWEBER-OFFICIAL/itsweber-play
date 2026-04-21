@@ -75,7 +75,7 @@ export const subscriptionRouter = router({
           viewCount: true,
           publishedAt: true,
           format: true,
-          channel: { select: { slug: true, displayName: true } },
+          channel: { select: { slug: true, displayName: true, avatarUrl: true } },
         },
       });
     }),

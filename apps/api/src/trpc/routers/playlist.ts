@@ -114,7 +114,7 @@ export const playlistRouter = router({
                   publishedAt: true,
                   visibility: true,
                   status: true,
-                  channel: { select: { slug: true, displayName: true } },
+                  channel: { select: { slug: true, displayName: true, avatarUrl: true } },
                 },
               },
             },
