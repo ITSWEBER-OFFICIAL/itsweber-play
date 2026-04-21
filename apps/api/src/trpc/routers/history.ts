@@ -9,7 +9,7 @@ const VIDEO_SELECT = {
   durationSec: true,
   viewCount: true,
   publishedAt: true,
-  channel: { select: { slug: true, displayName: true } },
+  channel: { select: { slug: true, displayName: true, avatarUrl: true } },
 } as const;
 
 export const historyRouter = router({

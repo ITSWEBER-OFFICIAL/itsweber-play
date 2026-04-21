@@ -145,7 +145,7 @@ export const adminRouter = router({
             publishedAt: true,
             format: true,
             owner: { select: { handle: true, displayName: true } },
-            channel: { select: { slug: true, displayName: true } },
+            channel: { select: { slug: true, displayName: true, avatarUrl: true } },
           },
         });
       }),

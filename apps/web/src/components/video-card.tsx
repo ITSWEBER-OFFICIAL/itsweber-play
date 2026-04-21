@@ -10,7 +10,7 @@ export interface VideoCardData {
   durationSec: number | null;
   viewCount: number;
   publishedAt: Date | string | null;
-  channel: { slug: string; displayName: string };
+  channel: { slug: string; displayName: string; avatarUrl: string | null };
 }
 
 export function formatDuration(sec: number | null): string | null {
@@ -74,10 +74,20 @@ export function VideoCard({
         )}
       </div>
       <div className="flex gap-3 px-1 pt-3.5">
-        <div className="h-9 w-9 shrink-0 rounded-full bg-gradient-to-br from-teal-400 to-teal-700" title={video.channel.displayName}>
-          <div className="flex h-full w-full items-center justify-center text-xs font-bold text-neutral-900">
-            {avatarChar}
-          </div>
+        <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full" title={video.channel.displayName}>
+          {video.channel.avatarUrl ? (
+            <Image
+              src={video.channel.avatarUrl}
+              alt={video.channel.displayName}
+              width={36}
+              height={36}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-400 to-teal-700 text-xs font-bold text-neutral-900">
+              {avatarChar}
+            </div>
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="line-clamp-2 text-[15px] font-semibold leading-tight tracking-[-0.01em] text-foreground group-hover:text-brand">

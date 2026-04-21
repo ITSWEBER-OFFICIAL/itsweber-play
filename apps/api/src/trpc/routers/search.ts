@@ -50,7 +50,7 @@ export const searchRouter = router({
             viewCount: true,
             publishedAt: true,
             format: true,
-            channel: { select: { slug: true, displayName: true } },
+            channel: { select: { slug: true, displayName: true, avatarUrl: true } },
           },
         }),
         ctx.prisma.channel.findMany({
@@ -127,7 +127,7 @@ export const searchRouter = router({
           viewCount: true,
           publishedAt: true,
           format: true,
-          channel: { select: { slug: true, displayName: true } },
+          channel: { select: { slug: true, displayName: true, avatarUrl: true } },
         },
       });
       return { tag: input.tag, videos };

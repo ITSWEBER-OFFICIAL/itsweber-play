@@ -131,7 +131,7 @@ export const userSettingsRouter = router({
         ctx.prisma.subscription.findMany({
           where: { subscriberId: userId },
           include: {
-            channel: { select: { slug: true, displayName: true } },
+            channel: { select: { slug: true, displayName: true, avatarUrl: true } },
           },
         }),
       ],
