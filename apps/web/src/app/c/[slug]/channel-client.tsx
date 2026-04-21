@@ -315,6 +315,20 @@ export function ChannelPageClient({
     );
   }
 
+  if (!query.data) {
+    return (
+      <main className="mx-auto max-w-md space-y-4 px-6 py-16 text-center">
+        <h1 className="text-2xl font-bold">Kanal nicht gefunden</h1>
+        <Link
+          href="/"
+          className="inline-block rounded-md bg-brand px-4 py-2 text-sm font-medium text-neutral-900"
+        >
+          Zurück
+        </Link>
+      </main>
+    );
+  }
+
   const rawData = query.data;
   const channel = rawData.channel as unknown as ChannelData;
   const videos = rawData.videos as unknown as VideoItem[];
