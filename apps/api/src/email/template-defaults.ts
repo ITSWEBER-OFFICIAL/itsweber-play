@@ -104,17 +104,19 @@ export const TEMPLATE_META: TemplateMeta[] = [
   },
 ];
 
-const EXAMPLE_BASE = { siteName: "ITSWEBER Play", siteUrl: "https://play.itsweber.net" };
+const PLACEHOLDER_BASE = { siteName: "{{siteName}}", siteUrl: "{{siteUrl}}" };
 
 // Generiert den initialen DB-Eintrag für ein Template.
+// WICHTIG: Variablen müssen als {{placeholder}} übergeben werden, damit
+// send.ts sie zur Laufzeit ersetzen kann. Niemals fertig gerenderte Werte.
 export function getDefaultTemplate(id: TemplateName): { subject: string; htmlBody: string; textBody: string } {
   const exampleVars: Record<TemplateName, object> = {
-    "welcome": { ...EXAMPLE_BASE, displayName: "Admin", handle: "admin" },
-    "email-verify": { ...EXAMPLE_BASE, displayName: "Admin", verifyUrl: "https://play.itsweber.net/auth/verify-email?token=EXAMPLE" },
-    "password-reset": { ...EXAMPLE_BASE, displayName: "Admin", resetUrl: "https://play.itsweber.net/auth/reset-password?token=EXAMPLE" },
-    "comment-notify": { ...EXAMPLE_BASE, recipientName: "Admin", authorName: "Nutzer", videoTitle: "Beispiel-Video", videoUrl: "https://play.itsweber.net/watch/example", commentExcerpt: "Toller Beitrag!" },
-    "subscriber-notify": { ...EXAMPLE_BASE, recipientName: "Admin", subscriberName: "Neuer Nutzer", channelUrl: "https://play.itsweber.net/c/admin", totalSubscribers: 1 },
-    "takedown-notify": { ...EXAMPLE_BASE, recipientName: "Admin", videoTitle: "Beispiel-Video", reason: "Community-Richtlinien", contactEmail: "hallo@itsweber.net" },
+    "welcome": { ...PLACEHOLDER_BASE, displayName: "{{displayName}}", handle: "{{handle}}" },
+    "email-verify": { ...PLACEHOLDER_BASE, displayName: "{{displayName}}", verifyUrl: "{{verifyUrl}}" },
+    "password-reset": { ...PLACEHOLDER_BASE, displayName: "{{displayName}}", resetUrl: "{{resetUrl}}" },
+    "comment-notify": { ...PLACEHOLDER_BASE, recipientName: "{{recipientName}}", authorName: "{{authorName}}", videoTitle: "{{videoTitle}}", videoUrl: "{{videoUrl}}", commentExcerpt: "{{commentExcerpt}}" },
+    "subscriber-notify": { ...PLACEHOLDER_BASE, recipientName: "{{recipientName}}", subscriberName: "{{subscriberName}}", channelUrl: "{{channelUrl}}", totalSubscribers: "{{totalSubscribers}}" },
+    "takedown-notify": { ...PLACEHOLDER_BASE, recipientName: "{{recipientName}}", videoTitle: "{{videoTitle}}", reason: "{{reason}}", contactEmail: "{{contactEmail}}" },
   };
   const builders = {
     "welcome": welcomeTemplate,
