@@ -78,8 +78,14 @@ export default function ChannelsPage() {
                 className="block rounded-xl border border-border bg-surface p-5 transition hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-[var(--shadow-card)]"
               >
                 <div className="flex items-start gap-3">
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-gradient-to-br from-teal-500 to-teal-700 text-lg font-bold text-neutral-900">
-                    {c.displayName[0]?.toUpperCase() ?? "?"}
+                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full">
+                    {c.avatarUrl ? (
+                      <img src={c.avatarUrl} alt={c.displayName} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="grid h-full w-full place-items-center bg-gradient-to-br from-teal-500 to-teal-700 text-lg font-bold text-neutral-900">
+                        {c.displayName[0]?.toUpperCase() ?? "?"}
+                      </div>
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="truncate font-semibold text-foreground">
