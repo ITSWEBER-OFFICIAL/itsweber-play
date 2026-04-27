@@ -22,7 +22,7 @@
     "@play/db": "workspace:*",
     "@play/shared": "workspace:*",
     "@play/storage": "workspace:*",
-    "bullmq": "^5.34.0",
+    "bullmq": "^5.76.2",
     "fluent-ffmpeg": "^2.1.3",
     "ioredis": "^5.4.2",
     "youtube-dl-exec": "^3.0.22"
